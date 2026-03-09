@@ -20,22 +20,14 @@ jobs:
 
       - name: Install dependencies and build frontend
         run: |
-          npm ci  # Or yarn install if using Yarn
-          npm run build  # Assumes 'npm run build' builds Vue+Vite project to dist/
+          npm ci
+          npm run build
 
       - name: Prepare release artifacts
         run: |
-          # Create a directory for the release bundle
-          mkdir release-bundle
-          
-          # Copy frontend dist
+          mkdir -p release-bundle
           cp -r dist release-bundle/frontend
-          
-          # Copy backend server folder (assuming it's in the root as 'server')
-          cp -r server release-bundle/server
-          
-          # Optionally, add other files like README, config examples
-          # cp README.md release-bundle/
+          cp -r Server release-bundle/Server
 
       - name: Zip the release bundle
         run: |
@@ -53,7 +45,7 @@ jobs:
           prerelease: false
           body: |
             Automated release for ${{ github.ref_name }}.
-            Includes frontend build and server folder.
+            Includes: frontend dist + Server backend folder.
 
       - name: Upload Release Asset
         uses: actions/upload-release-asset@v1
