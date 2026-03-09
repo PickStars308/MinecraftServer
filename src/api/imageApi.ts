@@ -58,6 +58,7 @@ export interface TimelineImageDeleteResponse {
 const apiClient = axios.create({
     baseURL: import.meta.env.VITE_API_BASE_URL,
     timeout: 10000,
+    method: 'POST',
     headers: {
         'Content-Type': 'application/json'
     }

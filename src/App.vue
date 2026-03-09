@@ -2,11 +2,11 @@
 import useThemeStore from './stores/theme'
 import {computed, onMounted, onUnmounted, ref} from 'vue'
 import {useRoute, useRouter} from 'vue-router'
-import axios from 'axios'
 import Background from "@/components/Background.vue";
 import Toolbar from "@/components/Toolbar.vue";
 import GlassToast from "@/components/toast/GlassToast.vue";
 import {startUpdateChecker, stopUpdateChecker} from "@/utils/updateChecker";
+import {checkInstallStatus as checkInstallStatusApi} from "@/api/installApi";
 
 const themeStore = useThemeStore()
 const route = useRoute()
@@ -20,15 +20,12 @@ themeStore.initTheme()
 
 async function checkInstallStatus(): Promise<boolean> {
   try {
-    const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/install/status`)
-    const data = response.data
-    return !!data.data?.installed
+    return await checkInstallStatusApi()
   } catch (error) {
     console.error('检查安装状态失败:', error)
     return false
   }
 }
-
 
 async function initInstallCheck() {
   try {

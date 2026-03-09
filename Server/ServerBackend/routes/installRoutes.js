@@ -56,17 +56,6 @@ router.get('/status', (req, res) => {
                 siteDescription: config.siteDescription,
                 mcServerApiUrl: config.mcServerApiUrl
             })
-            res.json({
-                success: true,
-                message: '已安装',
-                data: {
-                    installed: true,
-                    siteTitle: config.siteTitle || '',
-                    siteDescription: config.siteDescription || '',
-                    mcServerApiUrl: config.mcServerApiUrl || '',
-                    installDate: config.installDate || ''
-                }
-            });
         } else {
             console.log('[安装路由] 系统未安装')
             res.json({

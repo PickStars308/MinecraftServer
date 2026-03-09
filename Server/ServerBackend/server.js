@@ -7,16 +7,14 @@ const routes = require('./routes');
 
 const app = express();
 
-
+// CORS 配置
 const corsOptions = {
-    origin: 'http://localhost:5173',
+    origin: process.env.CORS_ORIGIN || '*',
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Origin', 'X-Requested-With', 'Content-Type', 'Accept', 'Authorization'],
-    credentials: true,
-    maxAge: 86400
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true
 };
 app.use(cors(corsOptions));
-
 
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 

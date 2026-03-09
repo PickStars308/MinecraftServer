@@ -90,11 +90,11 @@ const submitInstall = async () => {
     })
 
     if (result.success) {
-      addToast("系统安装完成，即将跳转到登录页面", 'success')
+      addToast("系统安装完成，即将跳转到首页", 'success')
 
 
       setTimeout(() => {
-        router.push('/admin/login')
+        router.push('/')
       }, 2000)
     } else {
       addToast("安装失败", 'error')

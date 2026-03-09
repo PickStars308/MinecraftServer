@@ -16,7 +16,7 @@ interface ApiResponse<T = unknown> {
 }
 
 const installApi = axios.create({
-    baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:3003',
+    baseURL: import.meta.env.VITE_API_BASE_URL,
     timeout: 30000,
     withCredentials: true,
     headers: {
@@ -27,14 +27,14 @@ const installApi = axios.create({
 /**
  * 检查安装状态
  */
-export async function checkInstallStatus(): Promise<InstallStatus> {
+export async function checkInstallStatus(): Promise<boolean> {
     try {
         const {data} = await installApi.get<ApiResponse<InstallStatus>>('/api/install/status')
-        return data.data || {installed: false}
+        return data.data?.installed || false
     } catch (error: any) {
         console.error('检查安装状态失败:', error)
-
-        return {installed: false}
+        // 如果 API 调用失败，返回未安装状态
+        return false
     }
 }
 
@@ -50,23 +50,5 @@ export async function executeInstall(data: InstallData): Promise<ApiResponse> {
             return error.response.data
         }
         throw error
-    }
-}
-
-/**
- * 验证 API 连接
- */
-export async function validateMcServerApi(url: string): Promise<boolean> {
-    try {
-        console.log('[安装 API] 开始验证 MC 服务器 API:', url)
-        const {data} = await installApi.post<ApiResponse>('/api/install/validate-api', {url})
-        console.log('[安装 API] 验证结果:', data)
-        return data.success || false
-    } catch (error: any) {
-        console.error('[安装 API] 验证失败:', error)
-        if (error.response) {
-            console.error('[安装 API] 错误响应:', error.response.data)
-        }
-        return false
     }
 }

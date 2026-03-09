@@ -10,6 +10,7 @@ interface ApiResponse<T = unknown> {
 const adminApi = axios.create({
     baseURL: import.meta.env.VITE_API_BASE_URL,
     timeout: 10000,
+    method: 'POST',
     withCredentials: true,
     headers: {
         'Content-Type': 'application/json'
