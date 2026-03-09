@@ -1,0 +1,23 @@
+{
+  "name": "serverbackend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "cookie": "^1.1.1",
+    "cors": "^2.8.6",
+    "crypto-js": "^4.2.0",
+    "dotenv": "^16.6.1",
+    "express": "^5.2.1",
+    "i18n": "^0.15.3",
+    "multer": "^2.1.1",
+    "sharp": "^0.34.5"
+  }
+}

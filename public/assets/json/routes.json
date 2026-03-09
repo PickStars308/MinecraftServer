@@ -1,0 +1,54 @@
+{
+  "routes": [
+    {
+      "path": "/",
+      "name": "home",
+      "title": "首页",
+      "component": "HomeView",
+      "meta": {
+        "description": "服务器主页",
+        "icon": "home"
+      }
+    },
+    {
+      "path": "/gallery",
+      "name": "gallery",
+      "title": "图集",
+      "component": "GalleryView",
+      "meta": {
+        "description": "服务器精彩瞬间",
+        "icon": "image"
+      }
+    },
+    {
+      "path": "/experience",
+      "name": "experience",
+      "title": "历程",
+      "component": "ExperienceView",
+      "meta": {
+        "description": "服务器历程分享",
+        "icon": "star"
+      }
+    },
+    {
+      "path": "/members",
+      "name": "members",
+      "title": "成员",
+      "component": "MembersView",
+      "meta": {
+        "description": "服务器成员介绍",
+        "icon": "users"
+      }
+    },
+    {
+      "path": "/server",
+      "name": "server",
+      "title": "服务器",
+      "component": "ServerView",
+      "meta": {
+        "description": "服务器介绍",
+        "icon": "server"
+      }
+    }
+  ]
+}
