@@ -17,16 +17,21 @@
 ### 方法一：一键安装
 
 ```bash
-# 1. 安装依赖
+# 2. 安装后端库
+cd Server/
 npm install
 
-# 2. 启动后端服务
+cd Server/MinecraftStatus
+npm install
+
 cd Server/ServerBackend
 npm install
+
+cd ../
 npm start
 
 # 3. 启动前端服务（新终端）
-cd ../..
+cd ../
 npm install
 npm run dev
 ```
