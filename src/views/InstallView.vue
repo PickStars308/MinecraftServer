@@ -1,10 +1,29 @@
 <script lang="ts" setup>
-import {computed, ref} from 'vue'
+import {computed, ref, onMounted} from 'vue'
 import {useRouter} from 'vue-router'
-import {executeInstall} from '@/api/installApi'
+import {executeInstall, checkInstallStatus} from '@/api/installApi'
 import {addToast} from '@/components/toast'
 
 const router = useRouter()
+
+// 检查安装状态，如果已安装则跳转到首页
+const checkInstallationStatus = async () => {
+  try {
+    const isInstalled = await checkInstallStatus()
+    if (isInstalled) {
+      router.push('/')
+    }
+  } catch (error: any) {
+    if (error.message && error.message.includes('CORS')) {
+      router.push('/error')
+    }
+  }
+}
+
+// 组件挂载时检查安装状态
+onMounted(() => {
+  checkInstallationStatus()
+})
 
 
 const currentStep = ref(1)
@@ -91,11 +110,6 @@ const submitInstall = async () => {
 
     if (result.success) {
       addToast("系统安装完成，即将跳转到首页", 'success')
-
-      // 直接设置安装状态缓存，避免路由守卫因异步状态更新延迟而误判
-      localStorage.setItem('installStatus', 'true')
-      localStorage.setItem('installStatusTime', String(Date.now()))
-
       setTimeout(() => {
         router.push('/')
       }, 2000)

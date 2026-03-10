@@ -5,15 +5,30 @@ const express = require("express")
 const http = require("http")
 const {Server} = require("socket.io")
 const {GameDig} = require("gamedig")
+const cors = require("cors")
 
 const app = express()
+
+const corsOptions = {
+    origin: process.env.CORS_ORIGIN || '*',
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true
+};
+app.use(cors(corsOptions));
+
+
 const server = http.createServer(app)
+
+
 const io = new Server(server, {
     cors: {
-        origin: "*"
+        origin: process.env.CORS_ORIGIN || '*',
+        methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+        allowedHeaders: ['Content-Type', 'Authorization'],
+        credentials: true
     }
 })
-
 
 const SERVER_IP = process.env.MC_SERVER_IP || "localhost"
 const SERVER_PORT = parseInt(process.env.MC_SERVER_PORT) || 25565

@@ -32,6 +32,10 @@ export async function checkInstallStatus(): Promise<boolean> {
         const {data} = await installApi.get<ApiResponse<InstallStatus>>('/api/install/status')
         return data.data?.installed || false
     } catch (error: any) {
+        // 检查是否是 CORS 错误
+        if (error.message && (error.message.includes('CORS') || error.message.includes('Network Error'))) {
+            throw error
+        }
         return false
     }
 }

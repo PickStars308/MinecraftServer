@@ -20,6 +20,7 @@ declare module 'vue' {
     AdminToolbar: typeof import('./src/components/AdminToolbar.vue')['default']
     AppLoader: typeof import('./src/components/AppLoader.vue')['default']
     Background: typeof import('./src/components/Background.vue')['default']
+    ErrorView: typeof import('./src/views/ErrorView.vue')['default']
     ExperienceView: typeof import('./src/views/ExperienceView.vue')['default']
     GalleryView: typeof import('./src/views/GalleryView.vue')['default']
     GlassDialog: typeof import('./src/components/GlassDialog.vue')['default']

@@ -15,6 +15,7 @@ const componentMap: Record<string, () => Promise<any>> = {
     AdminLoginView: () => import('@/views/AdminLoginView.vue'),
     AdminPanelView: () => import('@/views/AdminPanelView.vue'),
     InstallView: () => import('@/views/InstallView.vue'),
+    ErrorView: () => import('@/views/ErrorView.vue'),
     AdminOverviewView: () => import('@/views/admin/AdminOverviewView.vue'),
     AdminGalleryEditView: () => import('@/views/admin/AdminGalleryEditView.vue'),
     AdminTimelineEditView: () => import('@/views/admin/AdminTimelineEditView.vue'),
@@ -141,6 +142,16 @@ async function loadRoutesFromConfig(): Promise<RouteRecordRaw[]> {
                     hideToolbar: true
                 }
             },
+            {
+                path: '/error',
+                name: 'error',
+                component: resolveComponent('ErrorView'),
+                meta: {
+                    title: '错误页面',
+                    hidden: true,
+                    hideToolbar: true
+                }
+            },
             ...dynamicRoutes,
             ...buildAdminRoutes()
         ]
@@ -159,12 +170,21 @@ async function loadRoutesFromConfig(): Promise<RouteRecordRaw[]> {
                     hideToolbar: true
                 }
             },
+            {
+                path: '/error',
+                name: 'error',
+                component: resolveComponent('ErrorView'),
+                meta: {
+                    title: '错误页面',
+                    hidden: true,
+                    hideToolbar: true
+                }
+            },
             {path: '/', component: resolveComponent('HomeView')},
             {path: '/server', component: resolveComponent('ServerView')},
             {path: '/gallery', component: resolveComponent('GalleryView')},
             {path: '/experience', component: resolveComponent('ExperienceView')},
             {path: '/members', component: resolveComponent('MembersView')},
-            {path: '/server', component: resolveComponent('ServerView')},
             ...buildAdminRoutes()
         ]
     }

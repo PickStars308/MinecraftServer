@@ -13,5 +13,5 @@ function start(name, path) {
 
 }
 
-start("ServerBackend", "./ServerBackend/server.js")
-start("MinecraftStatus", "./MinecraftStatus/server.js")
+start("ServerBackend", "./Server/ServerBackend/server.js")
+start("MinecraftStatus", "./Server/MinecraftStatus/server.js")
