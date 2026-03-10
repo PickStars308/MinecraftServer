@@ -92,6 +92,9 @@ const submitInstall = async () => {
     if (result.success) {
       addToast("系统安装完成，即将跳转到首页", 'success')
 
+      // 直接设置安装状态缓存，避免路由守卫因异步状态更新延迟而误判
+      localStorage.setItem('installStatus', 'true')
+      localStorage.setItem('installStatusTime', String(Date.now()))
 
       setTimeout(() => {
         router.push('/')

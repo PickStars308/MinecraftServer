@@ -111,6 +111,6 @@ app.get("/api/status", (req, res) => {
 })
 
 
-server.listen(3004, () => {
-    console.log("服务器状态查询API http://localhost:3004")
+server.listen(process.env.PORT, () => {
+    console.log("服务器状态查询API http://localhost:" + process.env.PORT)
 })

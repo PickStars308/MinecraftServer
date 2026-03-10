@@ -32,8 +32,6 @@ export async function checkInstallStatus(): Promise<boolean> {
         const {data} = await installApi.get<ApiResponse<InstallStatus>>('/api/install/status')
         return data.data?.installed || false
     } catch (error: any) {
-        console.error('检查安装状态失败:', error)
-        // 如果 API 调用失败，返回未安装状态
         return false
     }
 }

@@ -391,22 +391,6 @@ $radius: 16px;
     }
   }
 
-  /* 最后一行两个卡片 50% */
-  .server-card:nth-last-child(-n + 2) {
-    flex: 0 0 calc(50% - 14px);
-  }
-
-  /* 平板 */
-  @media (max-width: 1024px) {
-    .server-card {
-      flex: 0 0 calc(50% - 14px);
-    }
-
-    .server-card:nth-last-child(-n + 2) {
-      flex: 0 0 calc(50% - 14px);
-    }
-  }
-
   /* 手机 */
   @media (max-width: 640px) {
     .server-card {

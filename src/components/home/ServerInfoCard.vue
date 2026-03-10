@@ -572,8 +572,8 @@ $dark-divider: rgba(255, 255, 255, 0.1);
     gap: 16px;
 
     @include responsive-mobile {
-      flex-direction: row;
-      gap: 12px;
+      flex-direction: column;
+      gap: 16px;
     }
 
     .stat-item {
@@ -583,6 +583,7 @@ $dark-divider: rgba(255, 255, 255, 0.1);
 
       @include responsive-mobile {
         width: 100%;
+        justify-content: flex-start;
       }
 
       .stat-icon {
@@ -625,7 +626,7 @@ $dark-divider: rgba(255, 255, 255, 0.1);
           }
 
           @include responsive-mobile {
-            font-size: 1rem;
+            font-size: 1.25rem;
           }
         }
 
@@ -651,8 +652,8 @@ $dark-divider: rgba(255, 255, 255, 0.1);
       }
 
       @include responsive-mobile {
-        width: 2px;
-        height: 48px;
+        width: 100%;
+        height: 2px;
       }
     }
   }
@@ -761,4 +762,5 @@ $dark-divider: rgba(255, 255, 255, 0.1);
     width: 95%;
   }
 }
+
 </style>

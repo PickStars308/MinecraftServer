@@ -50,20 +50,12 @@ const authMiddleware = async (req, res, next) => {
 router.get('/status', (req, res) => {
     try {
         const config = installUtils.getInstallConfig();
-        if (config.installed) {
-            console.log('[安装路由] 系统已安装，配置信息:', {
-                siteTitle: config.siteTitle,
-                siteDescription: config.siteDescription,
-                mcServerApiUrl: config.mcServerApiUrl
-            })
-        } else {
-            console.log('[安装路由] 系统未安装')
-            res.json({
-                success: true,
-                message: '未安装',
-                data: {installed: false}
-            });
-        }
+
+        res.json({
+            success: true,
+            message: config.installed ? '系统已安装' : '未安装',
+            data: {installed: config.installed}
+        });
     } catch (error) {
         console.error('[安装路由] 获取安装状态失败:', error)
         res.status(500).json({

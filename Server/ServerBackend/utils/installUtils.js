@@ -9,6 +9,11 @@ const encryptedConfigPath = path.join(__dirname, '../config', 'admin.enc');
 const ENCRYPTION_KEY = process.env.AES_SECRET_KEY || '';
 const IV_LENGTH = 16;
 
+// 内存缓存（避免频繁读取文件）
+let cachedConfig = null;
+let cacheTimestamp = 0;
+const CACHE_DURATION = 30000;
+
 /**
  * AES 加密函数
  */
@@ -41,40 +46,55 @@ function decrypt(text) {
 }
 
 /**
- * 获取安装配置
+ * 获取安装配置（带缓存）
  */
 function getInstallConfig() {
-    try {
+    const now = Date.now();
 
+    // 如果缓存有效，直接返回
+    if (cachedConfig && (now - cacheTimestamp) < CACHE_DURATION) {
+        return cachedConfig;
+    }
+
+    try {
         if (!fs.existsSync(encryptedConfigPath)) {
-            return {installed: false};
+            cachedConfig = {installed: false};
+            cacheTimestamp = now;
+            return cachedConfig;
         }
 
         const encryptedData = fs.readFileSync(encryptedConfigPath, 'utf-8');
         const decryptedText = decrypt(encryptedData);
 
         if (!decryptedText) {
-            return {installed: false};
+            cachedConfig = {installed: false};
+            cacheTimestamp = now;
+            return cachedConfig;
         }
-
 
         const lines = decryptedText.trim().split('\n');
         const credentialsLine = lines.find(line => line.includes(';'));
 
         if (!credentialsLine) {
-            return {installed: false};
+            cachedConfig = {installed: false};
+            cacheTimestamp = now;
+            return cachedConfig;
         }
 
         const [username, passwordHash] = credentialsLine.split(';').map(s => s.trim());
 
-        return {
+        cachedConfig = {
             installed: true,
             adminUsername: username || '',
             adminPasswordHash: passwordHash || ''
         };
+        cacheTimestamp = now;
+        return cachedConfig;
     } catch (error) {
         console.error('[配置] 读取安装配置失败:', error);
-        return {installed: false};
+        cachedConfig = {installed: false};
+        cacheTimestamp = now;
+        return cachedConfig;
     }
 }
 
@@ -83,12 +103,14 @@ function getInstallConfig() {
  */
 function saveInstallConfig(config) {
     try {
-
         const plainText = `${config.adminUsername || ''};${config.adminPasswordHash || ''}`;
-
 
         const encryptedData = encrypt(plainText);
         fs.writeFileSync(encryptedConfigPath, encryptedData, 'utf-8');
+
+        // 清除缓存，下次读取时会重新加载
+        cachedConfig = null;
+        cacheTimestamp = 0;
 
         console.log('[配置] 管理员配置已加密保存:', encryptedConfigPath);
 
@@ -98,7 +120,6 @@ function saveInstallConfig(config) {
         return false;
     }
 }
-
 
 /**
  * 密码加密（使用 bcrypt 或简单的 hash）

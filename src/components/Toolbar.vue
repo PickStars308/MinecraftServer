@@ -181,7 +181,7 @@ const handleScroll = () => {
   background-color: rgba(0, 0, 0, 0.05);
 }
 
-.toolbar-link {
+.toolbar-link.router-link-active {
   color: #ffffff;
   background-color: #fb7ebb;
 }
@@ -234,7 +234,7 @@ html[data-theme="dark"] .toolbar-link:hover {
   background-color: rgba(255, 255, 255, 0.1);
 }
 
-html[data-theme="dark"] .toolbar-link {
+html[data-theme="dark"] .toolbar-link.router-link-active {
   color: #ffffff;
   background-color: #fb7ebb;
 }
@@ -251,6 +251,10 @@ html[data-theme="dark"] .theme-toggle:hover {
 
 html[data-theme="dark"] .moon {
   display: inline-flex;
+}
+
+html[data-theme="dark"] .sun {
+  display: none;
 }
 
 @media (max-width: 900px) {

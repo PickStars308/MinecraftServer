@@ -24,6 +24,6 @@ app.use(express.urlencoded({extended: true}));
 
 app.use('/', routes);
 
-app.listen(3003, () => {
-    console.log("后台服务地址：http://localhost:3003");
+app.listen(process.env.PORT, () => {
+    console.log("后台服务地址：http://localhost:" + process.env.PORT);
 });

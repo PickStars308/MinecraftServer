@@ -5,6 +5,7 @@ import {useRoute, useRouter} from 'vue-router'
 import Background from "@/components/Background.vue";
 import Toolbar from "@/components/Toolbar.vue";
 import GlassToast from "@/components/toast/GlassToast.vue";
+import AppLoader from "@/components/AppLoader.vue";
 import {startUpdateChecker, stopUpdateChecker} from "@/utils/updateChecker";
 import {checkInstallStatus as checkInstallStatusApi} from "@/api/installApi";
 
@@ -30,12 +31,6 @@ async function checkInstallStatus(): Promise<boolean> {
 async function initInstallCheck() {
   try {
     const installed = await checkInstallStatus()
-    console.log('[App] 安装状态检查完成:', {
-      installed,
-      currentPath: route.path,
-      shouldRedirect: !installed && route.path !== '/install'
-    })
-
 
     if (!installed && route.path !== '/install') {
       router.replace('/install')
@@ -64,7 +59,8 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div v-if="!isLoading" class="app-container">
+  <AppLoader v-if="isLoading"/>
+  <div v-else class="app-container">
     <Background/>
     <Toolbar v-if="showToolbar"/>
     <GlassToast/>
