@@ -56,6 +56,11 @@ onMounted(() => {
 onUnmounted(() => {
   stopUpdateChecker();
 });
+
+const Copyright = import.meta.env.VITE_COPYRIGHT;
+const StartYear = import.meta.env.VITE_START_YEAR;
+
+const Year = new Date().getFullYear();
 </script>
 
 <template>
@@ -73,7 +78,10 @@ onUnmounted(() => {
     </main>
     <footer class="global-footer">
       <div class="footer-content">
-        <p>Copyright © 2024 Minecraft Server. All rights reserved.</p>
+        <p>© {{ StartYear }}
+          <template v-if="StartYear">-</template>
+          {{ Year }} {{ Copyright }}. All rights reserved.
+        </p>
       </div>
     </footer>
   </div>

@@ -19,6 +19,8 @@ interface ImportMetaEnv {
     readonly VITE_CAESAR_VALID_TOKEN: string
     readonly VITE_AES_SECRET_KEY: string
     readonly VITE_AES_IV: string
+    readonly VITE_START_YEAR: string
+    readonly VITE_COPYRIGHT: string
 }
 
 interface ImportMeta {
