@@ -327,12 +327,21 @@ onMounted(() => {
 }
 
 .member-card {
-  background: rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, 0.65);
+  border: 1px solid rgba(255, 255, 255, 0.4);
   border-radius: 12px;
   padding: 16px;
   display: flex;
   gap: 12px;
   align-items: center;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.75);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+    transform: translateY(-2px);
+  }
 
   .member-avatar {
     width: 64px;
@@ -380,26 +389,61 @@ onMounted(() => {
   }
 
   .remove-btn {
-    padding: 6px 12px;
+    padding: 8px 12px;
     font-size: 0.8rem;
     flex-shrink: 0;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 36px;
   }
 }
 
 .btn-success {
-  background: var(--color-success);
+  background: linear-gradient(135deg, var(--color-success), var(--color-success-dark));
   color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 500;
+  box-shadow: 0 2px 8px rgba(0, 123, 255, 0.2);
 
   &:hover {
-    background: var(--color-success-dark);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+  }
+
+  &:active {
+    transform: translateY(0);
   }
 }
 
 .btn-danger {
-  background: var(--color-danger);
+  background: linear-gradient(135deg, var(--color-danger), var(--color-danger-dark));
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 500;
+  box-shadow: 0 2px 8px rgba(220, 53, 69, 0.2);
 
   &:hover {
-    background: var(--color-danger-dark);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+
+  &:hover svg {
+    transform: scale(1.1);
+  }
+
+  svg {
+    transition: transform 0.2s ease;
   }
 }
 
@@ -434,7 +478,7 @@ html[data-theme='dark'] .add-member-form input,
 html[data-theme='dark'] .member-card input {
   background: rgba(15, 23, 42, 0.8);
   border-color: rgba(226, 232, 240, 0.2);
-  color: #000000;
+  color: #e2e8f0;
 
   &:focus {
     border-color: var(--color-primary);

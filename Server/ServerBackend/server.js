@@ -7,15 +7,6 @@ const routes = require('./routes');
 
 const app = express();
 
-// CORS 配置
-const corsOptions = {
-    origin: process.env.CORS_ORIGIN || '*',
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-    credentials: true
-};
-app.use(cors(corsOptions));
-
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 app.use(express.json());

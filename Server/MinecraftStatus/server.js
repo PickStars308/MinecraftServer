@@ -9,12 +9,27 @@ const cors = require("cors")
 
 const app = express()
 
+// CORS 配置
+let corsOrigin = process.env.CORS_ORIGIN;
+
+// 处理 CORS_ORIGIN 包含多个值的情况
+if (corsOrigin && corsOrigin.includes(',')) {
+    corsOrigin = corsOrigin.split(',').map(origin => origin.trim());
+    // 移除通配符 *，因为当 credentials: true 时不允许使用
+    corsOrigin = corsOrigin.filter(origin => origin !== '*');
+} else if (corsOrigin === '*') {
+    // 如果 CORS_ORIGIN 是单个通配符，也移除它
+    corsOrigin = undefined;
+}
+
 const corsOptions = {
-    origin: process.env.CORS_ORIGIN || '*',
+    origin: corsOrigin,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true
 };
+
+
 app.use(cors(corsOptions));
 
 
@@ -23,12 +38,13 @@ const server = http.createServer(app)
 
 const io = new Server(server, {
     cors: {
-        origin: process.env.CORS_ORIGIN || '*',
+        origin: corsOrigin,
         methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
         allowedHeaders: ['Content-Type', 'Authorization'],
         credentials: true
     }
 })
+
 
 const SERVER_IP = process.env.MC_SERVER_IP || "localhost"
 const SERVER_PORT = parseInt(process.env.MC_SERVER_PORT) || 25565
