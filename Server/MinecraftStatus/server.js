@@ -9,26 +9,21 @@ const cors = require("cors")
 
 const app = express()
 
-const corsOptions = {
-    origin: process.env.CORS_ORIGIN || '*',
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-    credentials: true
-};
-app.use(cors(corsOptions));
-
+// CORS 配置
+let corsOrigin = process.env.CORS_ORIGIN;
 
 const server = http.createServer(app)
 
 
 const io = new Server(server, {
     cors: {
-        origin: process.env.CORS_ORIGIN || '*',
+        origin: corsOrigin,
         methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
         allowedHeaders: ['Content-Type', 'Authorization'],
         credentials: true
     }
 })
+
 
 const SERVER_IP = process.env.MC_SERVER_IP || "localhost"
 const SERVER_PORT = parseInt(process.env.MC_SERVER_PORT) || 25565

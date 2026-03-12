@@ -205,6 +205,7 @@ const handleScroll = () => {
   justify-content: center;
   cursor: pointer;
   transition: all 0.2s ease;
+  position: relative;
 }
 
 .theme-toggle:hover {
@@ -213,10 +214,34 @@ const handleScroll = () => {
 
 .icon {
   display: inline-flex;
+  transition: opacity 0.2s ease;
+}
+
+.sun {
+  display: inline-flex;
 }
 
 .moon {
   display: none;
+  position: absolute;
+}
+
+html[data-theme="dark"] .theme-toggle {
+  background: rgba(15, 23, 42, 0.75);
+  border-color: rgba(226, 232, 240, 0.28);
+  color: #f8fafc;
+}
+
+html[data-theme="dark"] .theme-toggle:hover {
+  background: rgba(15, 23, 42, 0.95);
+}
+
+html[data-theme="dark"] .sun {
+  display: none;
+}
+
+html[data-theme="dark"] .moon {
+  display: inline-flex;
 }
 
 html[data-theme="dark"] .toolbar {
@@ -237,24 +262,6 @@ html[data-theme="dark"] .toolbar-link:hover {
 html[data-theme="dark"] .toolbar-link.router-link-active {
   color: #ffffff;
   background-color: #fb7ebb;
-}
-
-html[data-theme="dark"] .theme-toggle {
-  background: rgba(15, 23, 42, 0.75);
-  border-color: rgba(226, 232, 240, 0.28);
-  color: #f8fafc;
-}
-
-html[data-theme="dark"] .theme-toggle:hover {
-  background: rgba(15, 23, 42, 0.95);
-}
-
-html[data-theme="dark"] .moon {
-  display: inline-flex;
-}
-
-html[data-theme="dark"] .sun {
-  display: none;
 }
 
 @media (max-width: 900px) {
