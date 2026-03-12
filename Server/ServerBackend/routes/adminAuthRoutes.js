@@ -32,7 +32,6 @@ try {
             if (username && passwordHash) {
                 ADMIN_USERNAME = username;
                 ADMIN_PASSWORD_HASH = passwordHash;
-                console.log('[登录验证] 已加载加密的管理员配置');
             } else {
                 throw new Error('解密后的数据格式不正确');
             }
@@ -136,9 +135,7 @@ router.post('/admin/login', (req, res) => {
         });
     }
 
-
     const passwordHash = hashPassword(password);
-
     if (!safeEquals(username || '', ADMIN_USERNAME) || !safeEquals(passwordHash || '', ADMIN_PASSWORD_HASH)) {
         return res.status(401).json({
             success: false,

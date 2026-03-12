@@ -83,15 +83,10 @@ function getInstallConfig() {
  */
 function saveInstallConfig(config) {
     try {
-
         const plainText = `${config.adminUsername || ''};${config.adminPasswordHash || ''}`;
-
 
         const encryptedData = encrypt(plainText);
         fs.writeFileSync(encryptedConfigPath, encryptedData, 'utf-8');
-
-        console.log('[配置] 管理员配置已加密保存:', encryptedConfigPath);
-
         return true;
     } catch (error) {
         console.error('[配置] 保存安装配置失败:', error);
@@ -129,13 +124,10 @@ function performInstall(installData) {
             message: '请填写所有必填字段'
         };
     }
-
-
     config.installed = true;
     config.adminUsername = installData.adminUsername;
     config.adminPasswordHash = hashPassword(installData.adminPassword);
     config.installDate = new Date().toISOString();
-
 
     const saved = saveInstallConfig(config);
 

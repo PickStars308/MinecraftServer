@@ -73,14 +73,12 @@ router.post('/', authMiddleware, (req, res) => {
     try {
         const installData = req.body;
 
-
         if (!installData.adminUsername || !installData.adminPassword) {
             return res.status(400).json({
                 success: false,
                 message: '请填写所有必填字段'
             });
         }
-
 
         const result = installUtils.performInstall(installData);
 

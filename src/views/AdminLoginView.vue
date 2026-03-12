@@ -39,12 +39,10 @@ const submitLogin = async () => {
         router.push(redirectTarget)
       }, 100)
     } else {
-
       addToast(response.message || '用户名或密码错误', 'error')
     }
   } catch (error: any) {
     console.error('[登录] 异常:', error)
-
     addToast(error.message || '登录失败，请稍后重试', 'error')
   } finally {
     submitting.value = false
