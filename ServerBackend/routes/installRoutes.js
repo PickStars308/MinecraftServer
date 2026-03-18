@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 require('dotenv').config();
 const installUtils = require('../utils/installUtils');
+const configUtils = require('../utils/configUtils');
 const {caesarDecrypt, aesDecrypt} = require('../utils/cryptoUtils');
 
 /**
@@ -92,6 +93,74 @@ router.post('/', authMiddleware, (req, res) => {
         res.status(500).json({
             success: false,
             message: '执行安装失败',
+            error: error.message
+        });
+    }
+});
+
+/**
+ * 获取站点配置（需要认证）
+ */
+router.get('/config', authMiddleware, (req, res) => {
+    try {
+        const config = configUtils.getConfig();
+
+        if (!config) {
+            return res.status(404).json({
+                success: false,
+                message: '配置文件不存在'
+            });
+        }
+
+        res.json({
+            success: true,
+            message: '获取配置成功',
+            data: config
+        });
+    } catch (error) {
+        console.error('[安装路由] 获取配置失败:', error);
+        res.status(500).json({
+            success: false,
+            message: '获取配置失败',
+            error: error.message
+        });
+    }
+});
+
+/**
+ * 更新站点配置（需要认证）
+ */
+router.put('/config', authMiddleware, (req, res) => {
+    try {
+        const newConfig = req.body;
+
+        // 验证必要的配置字段
+        if (!newConfig.siteName) {
+            return res.status(400).json({
+                success: false,
+                message: '站点名称不能为空'
+            });
+        }
+
+        const success = configUtils.updateConfig(newConfig);
+
+        if (success) {
+            res.json({
+                success: true,
+                message: '配置更新成功',
+                data: newConfig
+            });
+        } else {
+            res.status(500).json({
+                success: false,
+                message: '配置更新失败'
+            });
+        }
+    } catch (error) {
+        console.error('[安装路由] 更新配置失败:', error);
+        res.status(500).json({
+            success: false,
+            message: '更新配置失败',
             error: error.message
         });
     }

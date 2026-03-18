@@ -561,7 +561,6 @@ const ServerPic = import.meta.env.VITE_API_BASE_URL
 
 .btn-danger {
   background: var(--color-danger);
-  color: white;
 
   &:hover {
     background: var(--color-danger-dark);

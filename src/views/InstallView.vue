@@ -1,8 +1,9 @@
 <script lang="ts" setup>
-import {computed, ref, onMounted} from 'vue'
+import {computed, onMounted, ref} from 'vue'
 import {useRouter} from 'vue-router'
-import {executeInstall, checkInstallStatus} from '@/api/installApi'
+import {checkInstallStatus, executeInstall, getSiteConfig, updateSiteConfig} from '@/api/installApi'
 import {addToast} from '@/components/toast'
+import {generateAuthToken} from '@/utils/cryptoUtils'
 
 const router = useRouter()
 
@@ -23,20 +24,33 @@ const checkInstallationStatus = async () => {
 // 组件挂载时检查安装状态
 onMounted(() => {
   checkInstallationStatus()
+  loadConfig()
 })
 
 
 const currentStep = ref(1)
-const totalSteps = 2
+const totalSteps = 4
 
 
 const loading = ref(false)
 
 
-const formData = ref({
+const adminFormData = ref({
   adminUsername: '',
   adminPassword: '',
   adminPasswordConfirm: ''
+})
+
+const configFormData = ref({
+  siteName: '',
+  siteDescription: '',
+  siteAuthor: '',
+  siteVersion: '1.0.0',
+  siteKeywords: '',
+  serverAddress: '',
+  serverCreationDate: new Date().toISOString().split('T')[0],
+  startYear: new Date().getFullYear().toString(),
+  copyright: ''
 })
 
 
@@ -53,25 +67,73 @@ const validateCurrentStep = (): boolean => {
 
   switch (currentStep.value) {
     case 1:
-      if (!formData.value.adminUsername.trim()) {
+      if (!adminFormData.value.adminUsername.trim()) {
         errors.value.adminUsername = '请输入管理员用户名'
-      } else if (formData.value.adminUsername.length < 3) {
+      } else if (adminFormData.value.adminUsername.length < 3) {
         errors.value.adminUsername = '用户名至少 3 个字符'
       }
 
-      if (!formData.value.adminPassword) {
+      if (!adminFormData.value.adminPassword) {
         errors.value.adminPassword = '请输入密码'
-      } else if (formData.value.adminPassword.length < 6) {
+      } else if (adminFormData.value.adminPassword.length < 6) {
         errors.value.adminPassword = '密码至少 6 个字符'
       }
 
-      if (formData.value.adminPassword !== formData.value.adminPasswordConfirm) {
+      if (adminFormData.value.adminPassword !== adminFormData.value.adminPasswordConfirm) {
         errors.value.adminPasswordConfirm = '两次输入的密码不一致'
       }
+      break
+    case 2:
+      break
+    case 3:
       break
   }
 
   return Object.keys(errors.value).length === 0
+}
+
+// 加载配置数据
+const loadConfig = async () => {
+  try {
+    const token = generateAuthToken()
+    const result = await getSiteConfig(token)
+
+    if (result.success && result.data) {
+      configFormData.value = {
+        siteName: result.data.siteName || '',
+        siteDescription: result.data.siteDescription || '',
+        siteAuthor: result.data.siteAuthor || '',
+        siteVersion: result.data.siteVersion || '1.0.0',
+        siteKeywords: result.data.siteKeywords || '',
+        serverAddress: result.data.serverAddress || '',
+        serverCreationDate: result.data.serverCreationDate || new Date().toISOString().split('T')[0],
+        startYear: result.data.startYear || new Date().getFullYear().toString(),
+        copyright: result.data.copyright || ''
+      }
+    }
+  } catch (error: any) {
+    console.error('加载配置失败:', error)
+  }
+}
+
+// 保存配置
+const saveConfig = async () => {
+  try {
+    const token = generateAuthToken()
+    const result = await updateSiteConfig(configFormData.value, token)
+
+    if (result.success) {
+      addToast('配置保存成功', 'success')
+      return true
+    } else {
+      addToast(result.message || '配置保存失败', 'error')
+      return false
+    }
+  } catch (error: any) {
+    console.error('保存配置失败:', error)
+    addToast(error.message || '保存配置失败', 'error')
+    return false
+  }
 }
 
 
@@ -103,13 +165,20 @@ const submitInstall = async () => {
   loading.value = true
 
   try {
+    // 先保存配置
+    const configSaved = await saveConfig()
+    if (!configSaved) {
+      loading.value = false
+      return
+    }
+
+    // 执行安装
     const result = await executeInstall({
-      adminUsername: formData.value.adminUsername,
-      adminPassword: formData.value.adminPassword
+      adminUsername: adminFormData.value.adminUsername,
+      adminPassword: adminFormData.value.adminPassword
     })
 
     if (result.success) {
-      addToast("系统安装完成，即将跳转到首页", 'success')
       setTimeout(() => {
         router.push('/')
       }, 2000)
@@ -160,7 +229,7 @@ const submitInstall = async () => {
               </label>
               <input
                   id="adminUsername"
-                  v-model="formData.adminUsername"
+                  v-model="adminFormData.adminUsername"
                   :class="{ error: errors.adminUsername }"
                   class="input"
                   placeholder="至少 3 个字符"
@@ -175,7 +244,7 @@ const submitInstall = async () => {
               </label>
               <input
                   id="adminPassword"
-                  v-model="formData.adminPassword"
+                  v-model="adminFormData.adminPassword"
                   :class="{ error: errors.adminPassword }"
                   class="input"
                   placeholder="至少 6 个字符"
@@ -190,7 +259,7 @@ const submitInstall = async () => {
               </label>
               <input
                   id="adminPasswordConfirm"
-                  v-model="formData.adminPasswordConfirm"
+                  v-model="adminFormData.adminPasswordConfirm"
                   :class="{ error: errors.adminPasswordConfirm }"
                   class="input"
                   placeholder="再次输入密码"
@@ -204,16 +273,204 @@ const submitInstall = async () => {
             </div>
           </div>
 
-          <!-- 步骤 2: 确认安装 -->
+          <!-- 步骤 2: Meta 信息配置 -->
           <div v-else-if="currentStep === 2" key="step2" class="step-content">
+            <h2 class="step-title">配置网站 Meta 信息</h2>
+
+            <div class="form-group">
+              <label class="field-label" for="siteName">
+                站点名称
+              </label>
+              <input
+                  id="siteName"
+                  v-model="configFormData.siteName"
+                  class="input"
+                  placeholder="例如：Stars Server"
+                  type="text"
+              />
+              <p class="hint-text">💡 用于网页标题和 SEO</p>
+            </div>
+
+            <div class="form-group">
+              <label class="field-label" for="siteDescription">
+                站点描述
+              </label>
+              <input
+                  id="siteDescription"
+                  v-model="configFormData.siteDescription"
+                  class="input"
+                  placeholder="简短介绍你的服务器"
+                  type="text"
+              />
+              <p class="hint-text">💡 用于搜索引擎描述</p>
+            </div>
+
+            <div class="form-group full-width">
+              <label class="field-label" for="siteKeywords">
+                站点关键词
+              </label>
+              <input
+                  id="siteKeywords"
+                  v-model="configFormData.siteKeywords"
+                  class="input"
+                  placeholder="Minecraft，我的世界，服务器，游戏（用逗号分隔）"
+                  type="text"
+              />
+              <p class="hint-text">💡 多个关键词用逗号分隔</p>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label class="field-label" for="siteAuthor">
+                  站点作者
+                </label>
+                <input
+                    id="siteAuthor"
+                    v-model="configFormData.siteAuthor"
+                    class="input"
+                    placeholder="作者名称"
+                    type="text"
+                />
+              </div>
+
+              <div class="form-group" style="display: none">
+                <label class="field-label" for="copyright">
+                  版权信息
+                </label>
+                <input
+                    id="copyright"
+                    v-model="configFormData.copyright"
+                    class="input"
+                    placeholder="版权所有者"
+                    type="text"
+                />
+              </div>
+            </div>
+
+            <div class="tip-box">
+              <p>📝 这些配置将用于网站的 SEO 和 Meta 标签</p>
+            </div>
+          </div>
+
+          <!-- 步骤 3: 服务器配置 -->
+          <div v-else-if="currentStep === 3" key="step3" class="step-content">
+            <h2 class="step-title">配置 Minecraft 服务器</h2>
+
+            <div class="form-group">
+              <label class="field-label" for="serverAddress">
+                服务器地址
+              </label>
+              <input
+                  id="serverAddress"
+                  v-model="configFormData.serverAddress"
+                  class="input"
+                  placeholder="mc.xinstudio.top"
+                  type="text"
+              />
+              <p class="hint-text">💡 填写你的服务器 IP 或域名</p>
+            </div>
+
+            <div class="form-group">
+              <label class="field-label" for="serverCreationDate">
+                服务器创建日期
+              </label>
+              <input
+                  id="serverCreationDate"
+                  v-model="configFormData.serverCreationDate"
+                  class="input"
+                  type="date"
+              />
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label class="field-label" for="startYear">
+                  起始年份
+                </label>
+                <input
+                    id="startYear"
+                    v-model="configFormData.startYear"
+                    class="input"
+                    placeholder="2024"
+                    type="text"
+                />
+              </div>
+
+              <div class="form-group" style="display: none">
+                <label class="field-label" for="siteVersion">
+                  站点版本
+                </label>
+                <input
+                    id="siteVersion"
+                    v-model="configFormData.siteVersion"
+                    class="input"
+                    placeholder="1.0.0"
+                    type="text"
+                />
+              </div>
+            </div>
+
+            <div class="tip-box">
+              <p>🎮 这些配置用于显示服务器状态和运行时间</p>
+            </div>
+          </div>
+
+          <!-- 步骤 4: 确认安装 -->
+          <div v-else-if="currentStep === 4" key="step4" class="step-content">
             <h2 class="step-title">确认安装信息</h2>
 
             <div class="confirm-card">
-              <h3>请确认以下信息</h3>
+              <h3>管理员账户</h3>
 
               <div class="confirm-item">
                 <span class="confirm-label">管理员用户名：</span>
-                <span class="confirm-value">{{ formData.adminUsername }}</span>
+                <span class="confirm-value">{{ adminFormData.adminUsername }}</span>
+              </div>
+            </div>
+
+            <div class="confirm-card" style="margin-top: 20px;">
+              <h3>网站 Meta 信息</h3>
+
+              <div class="confirm-item">
+                <span class="confirm-label">站点名称：</span>
+                <span class="confirm-value">{{ configFormData.siteName || '未设置' }}</span>
+              </div>
+              <div class="confirm-item">
+                <span class="confirm-label">站点描述：</span>
+                <span class="confirm-value">{{ configFormData.siteDescription || '未设置' }}</span>
+              </div>
+              <div class="confirm-item">
+                <span class="confirm-label">站点关键词：</span>
+                <span class="confirm-value">{{ configFormData.siteKeywords || '未设置' }}</span>
+              </div>
+              <div class="confirm-item">
+                <span class="confirm-label">站点作者：</span>
+                <span class="confirm-value">{{ configFormData.siteAuthor || '未设置' }}</span>
+              </div>
+              <div class="confirm-item">
+                <span class="confirm-label">版权信息：</span>
+                <span class="confirm-value">{{ configFormData.copyright || '未设置' }}</span>
+              </div>
+            </div>
+
+            <div class="confirm-card" style="margin-top: 20px;">
+              <h3>Minecraft 服务器配置</h3>
+
+              <div class="confirm-item">
+                <span class="confirm-label">服务器地址：</span>
+                <span class="confirm-value">{{ configFormData.serverAddress || '未设置' }}</span>
+              </div>
+              <div class="confirm-item">
+                <span class="confirm-label">服务器创建日期：</span>
+                <span class="confirm-value">{{ configFormData.serverCreationDate || '未设置' }}</span>
+              </div>
+              <div class="confirm-item">
+                <span class="confirm-label">起始年份：</span>
+                <span class="confirm-value">{{ configFormData.startYear || '未设置' }}</span>
+              </div>
+              <div class="confirm-item">
+                <span class="confirm-label">站点版本：</span>
+                <span class="confirm-value">{{ configFormData.siteVersion || '未设置' }}</span>
               </div>
             </div>
 
@@ -387,6 +644,16 @@ const submitInstall = async () => {
 
 .form-group {
   margin-bottom: 20px;
+
+  &.full-width {
+    grid-column: 1 / -1;
+  }
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
 }
 
 .field-label {

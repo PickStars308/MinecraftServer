@@ -19,7 +19,8 @@ const componentMap: Record<string, () => Promise<any>> = {
     AdminOverviewView: () => import('@/views/admin/AdminOverviewView.vue'),
     AdminGalleryEditView: () => import('@/views/admin/AdminGalleryEditView.vue'),
     AdminTimelineEditView: () => import('@/views/admin/AdminTimelineEditView.vue'),
-    AdminMembersEditView: () => import('@/views/admin/AdminMembersEditView.vue')
+    AdminMembersEditView: () => import('@/views/admin/AdminMembersEditView.vue'),
+    AdminConfigEditView: () => import('@/views/admin/AdminConfigEditView.vue')
 }
 
 const resolveComponent = (name: string): (() => Promise<any>) => componentMap[name] ?? fallbackComponent
@@ -99,6 +100,13 @@ function buildAdminRoutes(): RouteRecordRaw[] {
                     component: resolveComponent('AdminMembersEditView'),
                     beforeEnter: requireAdminSession,
                     meta: {title: 'Members Edit', hideToolbar: true, hidden: true}
+                },
+                {
+                    path: 'config',
+                    name: 'admin-config',
+                    component: resolveComponent('AdminConfigEditView'),
+                    beforeEnter: requireAdminSession,
+                    meta: {title: 'Site Config Edit', hideToolbar: true, hidden: true}
                 }
             ]
         }

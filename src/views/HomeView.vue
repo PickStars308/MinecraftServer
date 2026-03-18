@@ -4,9 +4,10 @@ import {io, Socket} from 'socket.io-client'
 import Typewriter from '@/components/Typewriter.vue'
 import ServerInfoCard from '@/components/home/ServerInfoCard.vue'
 import {addToast} from '@/components/toast'
+import useSiteConfigStore from '@/stores/siteConfig'
 
-const VITESERVERADDRESS = import.meta.env.VITE_SERVER_ADDRESS
-const VITE_API_URL = import.meta.env.VITE_MINECRAFT_STATUS_API_URL
+const siteConfigStore = useSiteConfigStore()
+const VITE_API_URL = import.meta.env.VITE_API_BASE_URL
 
 let socket: Socket | null = null
 
@@ -135,7 +136,7 @@ const handleRefresh = () => {
         version: serverInfo.version,
         motd: serverInfo.motd,
         status: serverInfo.status ? 'online' : 'offline',
-        serverAddress: VITESERVERADDRESS,
+        serverAddress: siteConfigStore.config?.serverAddress || 'localhost',
         players: serverInfo.players.map((p) => ({
           uuid: p.uuid,
           name_raw: p.name,

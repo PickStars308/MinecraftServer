@@ -9,6 +9,18 @@ interface InstallData {
     adminPassword: string
 }
 
+interface SiteConfig {
+    siteName: string
+    siteDescription: string
+    siteAuthor: string
+    siteVersion: string
+    siteKeywords: string
+    serverAddress: string
+    serverCreationDate: string
+    startYear: string
+    copyright: string
+}
+
 interface ApiResponse<T = unknown> {
     success: boolean
     message?: string
@@ -47,6 +59,40 @@ export async function executeInstall(data: InstallData): Promise<ApiResponse> {
     try {
         const {data: response} = await installApi.post<ApiResponse>('/api/install', data)
         return response
+    } catch (error: any) {
+        if (error.response && error.response.data) {
+            return error.response.data
+        }
+        throw error
+    }
+}
+
+/**
+ * 获取站点配置
+ */
+export async function getSiteConfig(token: string): Promise<ApiResponse<SiteConfig>> {
+    try {
+        const {data} = await installApi.get<ApiResponse<SiteConfig>>('/api/install/config', {
+            params: {token}
+        })
+        return data
+    } catch (error: any) {
+        if (error.response && error.response.data) {
+            return error.response.data
+        }
+        throw error
+    }
+}
+
+/**
+ * 更新站点配置
+ */
+export async function updateSiteConfig(config: SiteConfig, token: string): Promise<ApiResponse> {
+    try {
+        const {data} = await installApi.put<ApiResponse>('/api/install/config', config, {
+            params: {token}
+        })
+        return data
     } catch (error: any) {
         if (error.response && error.response.data) {
             return error.response.data

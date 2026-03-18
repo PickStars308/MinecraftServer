@@ -11,7 +11,8 @@ const navItems = computed(() => [
   {key: 'overview', label: '概览', to: '/admin/panel'},
   {key: 'gallery', label: '编辑画廊', to: '/admin/gallery'},
   {key: 'timeline', label: '编辑时间线', to: '/admin/timeline'},
-  {key: 'members', label: '编辑成员', to: '/admin/members'}
+  {key: 'members', label: '编辑成员', to: '/admin/members'},
+  {key: 'config', label: '站点配置', to: '/admin/config'}
 ])
 
 const currentTabLabel = computed(() => navItems.value.find(item => item.to === route.path)?.label ?? '管理面板')
@@ -44,13 +45,11 @@ const mobileMenuOpen = ref(false)
     <AdminToolbar/>
 
     <section class="admin-layout">
-      <!-- 移动端汉堡菜单按钮（只在小屏显示） -->
       <button v-if="!mobileMenuOpen" aria-label="打开菜单" class="mobile-hamburger"
               @click="mobileMenuOpen = !mobileMenuOpen">
         <span :class="{ open: mobileMenuOpen }"></span>
       </button>
 
-      <!-- 侧边栏（大屏固定，小屏抽屉） -->
       <aside :class="{ 'mobile-open': mobileMenuOpen }" class="sidebar glass">
         <div class="brand">
           <p class="brand-kicker">Minecraft Admin</p>

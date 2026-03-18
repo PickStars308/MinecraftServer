@@ -423,7 +423,6 @@ onMounted(() => {
 
 .btn-danger {
   background: linear-gradient(135deg, var(--color-danger), var(--color-danger-dark));
-  color: white;
   border: none;
   border-radius: 8px;
   font-weight: 500;

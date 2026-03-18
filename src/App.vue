@@ -1,15 +1,18 @@
 <script lang="ts" setup>
 import useThemeStore from './stores/theme'
+import useSiteConfigStore from './stores/siteConfig'
 import {computed, onMounted, onUnmounted, ref} from 'vue'
 import {useRoute, useRouter} from 'vue-router'
 import Background from "@/components/Background.vue";
 import Toolbar from "@/components/Toolbar.vue";
 import GlassToast from "@/components/toast/GlassToast.vue";
 import AppLoader from "@/components/AppLoader.vue";
+import DynamicMeta from "@/components/DynamicMeta.vue";
 import {startUpdateChecker, stopUpdateChecker} from "@/utils/updateChecker";
 import {checkInstallStatus as checkInstallStatusApi} from "@/api/installApi";
 
 const themeStore = useThemeStore()
+const siteConfigStore = useSiteConfigStore()
 const route = useRoute()
 const router = useRouter()
 const showToolbar = computed(() => !route.meta?.hideToolbar)
@@ -47,8 +50,10 @@ async function initInstallCheck() {
 }
 
 
-onMounted(() => {
-  initInstallCheck()
+onMounted(async () => {
+  await initInstallCheck()
+  // 加载站点配置
+  await siteConfigStore.loadConfig()
   startUpdateChecker();
 });
 
@@ -57,21 +62,25 @@ onUnmounted(() => {
   stopUpdateChecker();
 });
 
-const Copyright = import.meta.env.VITE_COPYRIGHT;
-const StartYear = import.meta.env.VITE_START_YEAR;
+// 从 store 中读取配置
+const Copyright = computed(() => siteConfigStore.config?.copyright || '');
+const StartYear = computed(() => siteConfigStore.config?.startYear || '');
 
 const Year = new Date().getFullYear();
 </script>
 
 <template>
-  <AppLoader v-if="isLoading"/>
+  <div v-if="isLoading">
+    <AppLoader/>
+  </div>
   <div v-else class="app-container">
+    <DynamicMeta/>
     <Background/>
     <Toolbar v-if="showToolbar"/>
     <GlassToast/>
     <main :class="{ 'no-toolbar': !showToolbar }" class="content-wrapper">
       <RouterView v-slot="{ Component }">
-        <Transition mode="out-in" name="fade">
+        <Transition mode="out-in" name="fade-slide">
           <component :is="Component" :key="viewKey"/>
         </Transition>
       </RouterView>
@@ -88,6 +97,23 @@ const Year = new Date().getFullYear();
 </template>
 
 <style scoped>
+/* 路由切换渐显动画 */
+.fade-slide-enter-active,
+.fade-slide-leave-active {
+  transition: opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+  transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.fade-slide-enter-from {
+  opacity: 0;
+  transform: translateY(10px) scale(0.98);
+}
+
+.fade-slide-leave-to {
+  opacity: 0;
+  transform: translateY(-10px) scale(0.98);
+}
+
 .app-container {
   position: relative;
   min-height: 100vh;

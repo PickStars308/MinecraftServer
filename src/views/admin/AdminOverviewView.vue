@@ -2,9 +2,10 @@
 import {computed, onMounted, onUnmounted, ref} from 'vue'
 import {io, Socket} from 'socket.io-client'
 import {addToast} from '@/components/toast'
+import useSiteConfigStore from '@/stores/siteConfig'
 
-const VITESERVERADDRESS = import.meta.env.VITE_SERVER_ADDRESS
-const VITE_API_URL = import.meta.env.VITE_MINECRAFT_STATUS_API_URL
+const siteConfigStore = useSiteConfigStore()
+const VITE_API_URL = import.meta.env.VITE_API_BASE_URL
 
 let socket: Socket | null = null
 
@@ -21,7 +22,11 @@ const serverInfo = ref({
   loading: true
 })
 
-const serverCreationDate = new Date(import.meta.env.VITE_SERVER_CREATION_DATE)
+// 从 store 获取服务器创建日期
+const serverCreationDate = computed(() => {
+  const dateStr = siteConfigStore.config?.serverCreationDate || new Date().toISOString().split('T')[0]
+  return new Date(dateStr)
+})
 
 const uptime = computed(() => {
   const now = new Date()
@@ -50,17 +55,21 @@ const updateServerInfo = (data: any) => {
 }
 
 onMounted(() => {
+  // 等待配置加载完成
+  if (!siteConfigStore.config) {
+    siteConfigStore.loadConfig()
+  }
 
   socket = io(VITE_API_URL, {
     transports: ["websocket"]
   })
 
   socket.on("connect", () => {
-
+    // 使用 store 中的服务器地址
+    const serverAddress = siteConfigStore.config?.serverAddress || 'localhost'
     socket?.emit("queryServer", {
-      host: VITESERVERADDRESS
+      host: serverAddress
     })
-
   })
 
   socket.on("serverStatus", (data) => {
