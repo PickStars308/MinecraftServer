@@ -50,7 +50,7 @@ const configFormData = ref({
   serverAddress: '',
   serverCreationDate: new Date().toISOString().split('T')[0],
   startYear: new Date().getFullYear().toString(),
-  copyright: ''
+  copyright: 'PickStars'
 }) as any
 
 
@@ -108,7 +108,7 @@ const loadConfig = async () => {
         serverAddress: result.data.serverAddress || '',
         serverCreationDate: result.data.serverCreationDate || new Date().toISOString().split('T')[0],
         startYear: result.data.startYear || new Date().getFullYear().toString(),
-        copyright: result.data.copyright || '',
+        copyright: result.data.copyright || 'PickStars',
       }
     }
   } catch (error: any) {

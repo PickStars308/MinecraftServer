@@ -13,43 +13,45 @@ const SESSION_TTL_MS = 1000 * 60 * 60 * 8;
 const SESSION_SECRET = process.env.ADMIN_SESSION_SECRET || '';
 const isProd = process.env.NODE_ENV === 'production';
 
+// 延迟加载凭据，避免模块缓存问题
+function loadAdminCredentials() {
+    let adminUsername = 'admin';
+    let adminPasswordHash = null;
 
-let ADMIN_USERNAME = 'admin';
-let ADMIN_PASSWORD_HASH = null;
+    try {
+        const encryptedConfigPath = path.join(__dirname, '../config', 'admin.enc');
+        if (fs.existsSync(encryptedConfigPath)) {
+            const encryptedData = fs.readFileSync(encryptedConfigPath, 'utf-8');
 
-try {
-    const encryptedConfigPath = path.join(__dirname, '../config', 'admin.enc');
-    if (fs.existsSync(encryptedConfigPath)) {
-        const encryptedData = fs.readFileSync(encryptedConfigPath, 'utf-8');
+            const installUtils = require('../utils/installUtils');
+            const decryptedText = installUtils.decrypt(encryptedData);
 
+            if (decryptedText) {
+                const [username, passwordHash] = decryptedText.split(';').map(s => s.trim());
 
-        const installUtils = require('../utils/installUtils');
-        const decryptedText = installUtils.decrypt(encryptedData);
-
-        if (decryptedText) {
-            const [username, passwordHash] = decryptedText.split(';').map(s => s.trim());
-
-            if (username && passwordHash) {
-                ADMIN_USERNAME = username;
-                ADMIN_PASSWORD_HASH = passwordHash;
+                if (username && passwordHash) {
+                    adminUsername = username;
+                    adminPasswordHash = passwordHash;
+                } else {
+                    throw new Error('解密后的数据格式不正确');
+                }
             } else {
-                throw new Error('解密后的数据格式不正确');
+                throw new Error('解密失败');
             }
         } else {
-            throw new Error('解密失败');
+            adminUsername = process.env.ADMIN_USERNAME || 'admin';
+            const plainPassword = process.env.ADMIN_PASSWORD || '';
+            adminPasswordHash = crypto.createHash('sha256').update(plainPassword).digest('hex');
+            console.log('[登录验证] 使用默认管理员账户（未检测到加密配置）');
         }
-    } else {
-
-        ADMIN_USERNAME = process.env.ADMIN_USERNAME || 'admin';
+    } catch (error) {
+        console.error('[登录验证] 读取加密配置失败:', error.message);
+        adminUsername = process.env.ADMIN_USERNAME || 'admin';
         const plainPassword = process.env.ADMIN_PASSWORD || '';
-        ADMIN_PASSWORD_HASH = crypto.createHash('sha256').update(plainPassword).digest('hex');
-        console.log('[登录验证] 使用默认管理员账户（未检测到加密配置）');
+        adminPasswordHash = crypto.createHash('sha256').update(plainPassword).digest('hex');
     }
-} catch (error) {
-    console.error('[登录验证] 读取加密配置失败:', error.message);
-    ADMIN_USERNAME = process.env.ADMIN_USERNAME || 'admin';
-    const plainPassword = process.env.ADMIN_PASSWORD || '';
-    ADMIN_PASSWORD_HASH = crypto.createHash('sha256').update(plainPassword).digest('hex');
+
+    return {adminUsername, adminPasswordHash};
 }
 
 const sessions = new Map();
@@ -127,6 +129,9 @@ function hashPassword(password) {
 router.post('/admin/login', (req, res) => {
     cleanupExpiredSessions();
 
+    // 每次请求时动态加载凭据，确保获取最新配置
+    const {adminUsername, adminPasswordHash} = loadAdminCredentials();
+
     const {username, password} = req.body || {};
     if (!username || !password) {
         return res.status(400).json({
@@ -136,7 +141,7 @@ router.post('/admin/login', (req, res) => {
     }
 
     const passwordHash = hashPassword(password);
-    if (!safeEquals(username || '', ADMIN_USERNAME) || !safeEquals(passwordHash || '', ADMIN_PASSWORD_HASH)) {
+    if (!safeEquals(username || '', adminUsername) || !safeEquals(passwordHash || '', adminPasswordHash)) {
         return res.status(401).json({
             success: false,
             message: '用户名或密码错误'
