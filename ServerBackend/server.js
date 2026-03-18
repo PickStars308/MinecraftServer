@@ -15,27 +15,13 @@ const routes = require('./routes');
 const app = express();
 
 
-let corsOrigins = (process.env.CORS_ORIGIN || '').split(',').map(origin => origin.trim());
-
 const corsOptions = {
-    origin: function (origin, callback) {
-
-        if (!origin) return callback(null, true);
-
-
-        if (corsOrigins.indexOf(origin) !== -1) {
-            callback(null, true);
-        } else {
-            callback(new Error('Not allowed by CORS'));
-        }
-    },
+    origin: process.env.CORS_ORIGIN,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,
     optionsSuccessStatus: 200
 };
-
-app.use(cors(corsOptions));
 
 const server = http.createServer(app)
 
