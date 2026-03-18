@@ -67,7 +67,7 @@ const handleSubmit = async () => {
 
     if (result.success) {
       addToast('配置保存成功，即将刷新页面', 'success')
-      // 更新 store
+
       siteConfigStore.updateConfig(formData.value)
       setTimeout(() => {
         window.location.reload()

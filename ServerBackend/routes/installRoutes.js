@@ -134,7 +134,7 @@ router.put('/config', authMiddleware, (req, res) => {
     try {
         const newConfig = req.body;
 
-        // 验证必要的配置字段
+
         if (!newConfig.siteName) {
             return res.status(400).json({
                 success: false,

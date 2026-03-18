@@ -4,32 +4,6 @@ declare module '*.vue' {
     export default component
 }
 
-declare module 'vite-plugin-obfuscator' {
-    import type {Plugin} from 'vite'
-
-    interface ObfuscatorOptions {
-        options?: {
-            compact?: boolean
-            controlFlowFlattening?: boolean
-            controlFlowFlatteningThreshold?: number
-            deadCodeInjection?: boolean
-            deadCodeInjectionThreshold?: number
-            stringArray?: boolean
-            stringArrayEncoding?: string
-            stringArrayThreshold?: number
-            renameGlobals?: boolean
-            renameProperties?: boolean
-            transformObjectKeys?: boolean
-            selfDefending?: boolean
-            debugProtection?: boolean
-            debugProtectionInterval?: boolean
-        }
-    }
-
-    export default function (options?: ObfuscatorOptions): Plugin
-}
-
-
 interface ImportMetaEnv {
     readonly VITE_SITE_NAME: string
     readonly VITE_SITE_DESCRIPTION: string

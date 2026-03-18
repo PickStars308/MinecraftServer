@@ -52,7 +52,7 @@ async function initInstallCheck() {
 
 onMounted(async () => {
   await initInstallCheck()
-  // 加载站点配置
+
   await siteConfigStore.loadConfig()
   startUpdateChecker();
 });
@@ -62,7 +62,7 @@ onUnmounted(() => {
   stopUpdateChecker();
 });
 
-// 从 store 中读取配置
+
 const Copyright = computed(() => siteConfigStore.config?.copyright || '');
 const StartYear = computed(() => siteConfigStore.config?.startYear || '');
 

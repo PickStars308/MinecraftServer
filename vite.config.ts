@@ -4,7 +4,6 @@ import {resolve} from 'path'
 
 import compression from 'vite-plugin-compression'
 
-import obfuscator from 'vite-plugin-obfuscator'
 import imageCompression from "vite-plugin-image-compress";
 
 
@@ -19,27 +18,6 @@ export default defineConfig({
             algorithm: 'gzip',
             ext: '.gz',
             deleteOriginFile: false
-        }),
-
-        process.env.NODE_ENV === 'production' &&
-        obfuscator({
-
-            options: {
-                compact: true,
-                controlFlowFlattening: true,
-                controlFlowFlatteningThreshold: 0.8,
-                deadCodeInjection: true,
-                deadCodeInjectionThreshold: 0.4,
-                stringArray: true,
-                stringArrayEncoding: 'base64',
-                stringArrayThreshold: 0.8,
-                renameGlobals: false,
-                renameProperties: false,
-                transformObjectKeys: false,
-                selfDefending: true,
-                debugProtection: false,
-                debugProtectionInterval: false
-            }
         }),
         imageCompression({
             include: [

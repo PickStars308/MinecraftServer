@@ -7,7 +7,7 @@ import {generateAuthToken} from '@/utils/cryptoUtils'
 
 const router = useRouter()
 
-// 检查安装状态，如果已安装则跳转到首页
+
 const checkInstallationStatus = async () => {
   try {
     const isInstalled = await checkInstallStatus()
@@ -21,7 +21,7 @@ const checkInstallationStatus = async () => {
   }
 }
 
-// 组件挂载时检查安装状态
+
 onMounted(() => {
   checkInstallationStatus()
   loadConfig()
@@ -51,7 +51,7 @@ const configFormData = ref({
   serverCreationDate: new Date().toISOString().split('T')[0],
   startYear: new Date().getFullYear().toString(),
   copyright: ''
-})
+}) as any
 
 
 const errors = ref<Record<string, string>>({})
@@ -92,7 +92,7 @@ const validateCurrentStep = (): boolean => {
   return Object.keys(errors.value).length === 0
 }
 
-// 加载配置数据
+
 const loadConfig = async () => {
   try {
     const token = generateAuthToken()
@@ -108,7 +108,7 @@ const loadConfig = async () => {
         serverAddress: result.data.serverAddress || '',
         serverCreationDate: result.data.serverCreationDate || new Date().toISOString().split('T')[0],
         startYear: result.data.startYear || new Date().getFullYear().toString(),
-        copyright: result.data.copyright || ''
+        copyright: result.data.copyright || '',
       }
     }
   } catch (error: any) {
@@ -116,7 +116,7 @@ const loadConfig = async () => {
   }
 }
 
-// 保存配置
+
 const saveConfig = async () => {
   try {
     const token = generateAuthToken()
@@ -165,14 +165,14 @@ const submitInstall = async () => {
   loading.value = true
 
   try {
-    // 先保存配置
+
     const configSaved = await saveConfig()
     if (!configSaved) {
       loading.value = false
       return
     }
 
-    // 执行安装
+
     const result = await executeInstall({
       adminUsername: adminFormData.value.adminUsername,
       adminPassword: adminFormData.value.adminPassword

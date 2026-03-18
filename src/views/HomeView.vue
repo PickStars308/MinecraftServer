@@ -69,6 +69,8 @@ const updateServerInfo = (data: any) => {
 
 }
 
+const VITESERVERADDRESS = import.meta.env.VITE_API_BASE_URL
+
 onMounted(() => {
 
   socket = io(VITE_API_URL, {

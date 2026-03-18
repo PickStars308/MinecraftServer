@@ -22,10 +22,9 @@ const serverInfo = ref({
   loading: true
 })
 
-// 从 store 获取服务器创建日期
+
 const serverCreationDate = computed(() => {
-  const dateStr = siteConfigStore.config?.serverCreationDate || new Date().toISOString().split('T')[0]
-  return new Date(dateStr)
+  return new Date((siteConfigStore.config ?? {serverCreationDate: new Date()})?.serverCreationDate)
 })
 
 const uptime = computed(() => {
@@ -55,7 +54,7 @@ const updateServerInfo = (data: any) => {
 }
 
 onMounted(() => {
-  // 等待配置加载完成
+
   if (!siteConfigStore.config) {
     siteConfigStore.loadConfig()
   }
@@ -65,7 +64,7 @@ onMounted(() => {
   })
 
   socket.on("connect", () => {
-    // 使用 store 中的服务器地址
+
     const serverAddress = siteConfigStore.config?.serverAddress || 'localhost'
     socket?.emit("queryServer", {
       host: serverAddress

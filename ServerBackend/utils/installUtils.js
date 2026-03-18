@@ -5,7 +5,7 @@ require('dotenv').config();
 
 const encryptedConfigPath = path.join(__dirname, '../config', 'admin.enc');
 
-// 从环境变量读取加密密钥
+
 const ENCRYPTION_KEY = process.env.AES_SECRET_KEY || '';
 const IV_LENGTH = 16;
 

@@ -1,7 +1,7 @@
 const path = require('path')
 require('dotenv').config({path: path.join(__dirname, '.env')})
 
-// 初始化配置文件（如果不存在）
+
 const configUtils = require('./utils/configUtils');
 configUtils.initConfig();
 
@@ -14,15 +14,15 @@ const routes = require('./routes');
 
 const app = express();
 
-// CORS 配置 - 支持多个来源
+
 let corsOrigins = (process.env.CORS_ORIGIN || '').split(',').map(origin => origin.trim());
 
 const corsOptions = {
     origin: function (origin, callback) {
-        // 允许没有 origin 的请求（如 Postman、curl 等非浏览器请求）
+
         if (!origin) return callback(null, true);
 
-        // 检查是否在允许的白名单中
+
         if (corsOrigins.indexOf(origin) !== -1) {
             callback(null, true);
         } else {
@@ -39,12 +39,12 @@ app.use(cors(corsOptions));
 
 const server = http.createServer(app)
 
-// Socket.IO 配置
+
 const io = new Server(server, {
     cors: corsOptions
 })
 
-// Minecraft 服务器状态查询配置
+
 const SERVER_IP = process.env.MC_SERVER_IP || "localhost"
 const SERVER_PORT = parseInt(process.env.MC_SERVER_PORT) || 25565
 const QUERY_INTERVAL = parseInt(process.env.QUERY_INTERVAL) || 10000
@@ -116,17 +116,17 @@ async function queryServer() {
     }
 }
 
-// Socket.IO 连接处理
+
 io.on("connection", (socket) => {
     console.log("客户端连接")
     socket.emit("serverStatus", lastStats)
 })
 
-// 定时查询服务器状态
+
 setInterval(queryServer, QUERY_INTERVAL)
 queryServer()
 
-// Minecraft 状态 API 端点
+
 app.get("/api/status", (req, res) => {
     res.json(lastStats)
 })

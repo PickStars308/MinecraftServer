@@ -56,26 +56,6 @@
         <div class="card-content">
           <div class="feature-item">
             <span class="feature-icon">✓</span>
-            <span class="feature-text">IPV4网络</span>
-          </div>
-          <div class="feature-item">
-            <span class="feature-icon">✓</span>
-            <span class="feature-text">IPV6网络</span>
-          </div>
-          <div class="feature-item">
-            <span class="feature-icon">✓</span>
-            <span class="feature-text">镜像服务器</span>
-          </div>
-          <div class="feature-item">
-            <span class="feature-icon">✓</span>
-            <span class="feature-text">双重备份</span>
-          </div>
-          <div class="feature-item">
-            <span class="feature-icon">✓</span>
-            <span class="feature-text">群服互通</span>
-          </div>
-          <div class="feature-item">
-            <span class="feature-icon">✓</span>
             <span class="feature-text">联机工具提供</span>
           </div>
         </div>
@@ -124,7 +104,7 @@
         </div>
         <h3 class="card-title">禁止作弊</h3>
         <div class="card-content">
-          <p class="rule-text">严禁使用任何作弊客户端或利用游戏漏洞</p>
+          <p class="rule-text">严禁使用任何作弊客户端</p>
         </div>
       </div>
 

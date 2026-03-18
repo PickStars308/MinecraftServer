@@ -287,7 +287,7 @@ Edit `src/assets/styles/variables.scss` to customize colors:
 :root {
   --color-primary: #your-color;
   --color-secondary: #your-color;
-  // ...
+
 }
 ```
 
