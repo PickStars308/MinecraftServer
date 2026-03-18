@@ -30,7 +30,7 @@ const serverCreationDate = computed(() => {
 
 const uptime = computed(() => {
   const now = new Date()
-  const diffTime = Math.abs(now.getTime() - serverCreationDate.getTime())
+  const diffTime = Math.abs(now.getTime() - serverCreationDate.value.getTime())
   return Math.ceil(diffTime / (1000 * 60 * 60 * 24))
 })
 
