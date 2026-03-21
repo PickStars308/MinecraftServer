@@ -14,7 +14,7 @@ const authMiddleware = async (req, res, next) => {
     try {
         let {token} = req.query;
         if (!token) {
-            ;
+
             return res.status(401).json({
                 success: false,
                 message: '未授权访问 - 缺少 token'
@@ -136,7 +136,6 @@ router.get('/playlist', authMiddleware, async (req, res) => {
         });
 
 
-        // 检查响应结构，支持直接返回的结果或包含 body 的结果
         const responseBody = result.body || result;
         if (responseBody.code === 200 && responseBody.playlist) {
 
@@ -255,7 +254,6 @@ router.get('/playlist/detail', authMiddleware, async (req, res) => {
         });
 
 
-        // 检查响应结构，支持直接返回的结果或包含 body 的结果
         const responseBody = result.body || result;
         if (responseBody.code === 200 && responseBody.playlist) {
             const playlist = responseBody.playlist;

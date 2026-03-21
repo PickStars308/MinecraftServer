@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import {onMounted, ref, watch} from 'vue'
 import {updateSiteConfig} from '@/api/installApi'
+import {checkLoginStatus} from '@/api/neteaseApi'
 import {generateAuthToken} from '@/utils/cryptoUtils'
 import {addToast} from '@/components/toast'
 import useSiteConfigStore from '@/stores/siteConfig'
@@ -38,6 +39,24 @@ watch(
 async function handleSave() {
   if (!siteConfigStore.config) {
     addToast('站点配置尚未加载完成', 'error')
+    return
+  }
+
+  if (!props.isLoggedIn) {
+    addToast('请先登录网易云音乐', 'error')
+    return
+  }
+
+
+  try {
+    const loginStatus = await checkLoginStatus()
+    if (!loginStatus?.data?.isLoggedIn) {
+      addToast('网易云音乐登录状态已过期，请重新登录', 'error')
+      return
+    }
+  } catch (error) {
+    console.error('验证登录状态失败:', error)
+    addToast('验证登录状态失败，请重新登录', 'error')
     return
   }
 

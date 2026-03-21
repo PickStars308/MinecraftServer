@@ -1,18 +1,21 @@
 <script lang="ts" setup>
-import {computed, ref} from 'vue'
+import {computed, onMounted, ref} from 'vue'
 import {useRoute, useRouter} from 'vue-router'
 import {logoutAdmin} from '@/api/adminAuthApi'
+import {checkForUpdates, getLatestVersion} from '@/utils/updateChecker'
 import AdminToolbar from '@/components/AdminToolbar.vue'
 
 const route = useRoute()
 const router = useRouter()
+const hasUpdate = ref(false)
 
 const navItems = computed(() => [
   {key: 'overview', label: '概览', to: '/admin/panel'},
   {key: 'gallery', label: '编辑画廊', to: '/admin/gallery'},
   {key: 'timeline', label: '编辑时间线', to: '/admin/timeline'},
   {key: 'members', label: '编辑成员', to: '/admin/members'},
-  {key: 'config', label: '站点配置', to: '/admin/config'}
+  {key: 'config', label: '站点配置', to: '/admin/config'},
+  {key: 'about', label: '关于项目', to: '/admin/about'}
 ])
 
 const currentTabLabel = computed(() => navItems.value.find(item => item.to === route.path)?.label ?? '管理面板')
@@ -38,6 +41,12 @@ const handleLogout = async () => {
 
 
 const mobileMenuOpen = ref(false)
+
+onMounted(async () => {
+  await checkForUpdates()
+  const latestVersion = getLatestVersion()
+  hasUpdate.value = latestVersion && latestVersion !== '1.0.0'
+})
 </script>
 
 <template>
@@ -59,6 +68,7 @@ const mobileMenuOpen = ref(false)
           <button v-for="item in navItems" :key="item.key" :class="{ active: isActive(item.to) }" class="nav-item"
                   type="button" @click="navigateTo(item.to)">
             {{ item.label }}
+            <span v-if="item.key === 'about' && hasUpdate" class="update-badge"></span>
           </button>
         </nav>
         <button class="logout-btn" type="button" @click="handleLogout">退出登录</button>
@@ -110,7 +120,7 @@ $mobile-break: 1024px;
   transition: all 0.25s ease;
 }
 
-/* 移动端汉堡图标 */
+
 .mobile-hamburger {
   display: none;
   position: fixed;
@@ -192,7 +202,7 @@ $mobile-break: 1024px;
   z-index: 999;
 }
 
-/* 移动端抽屉样式 */
+
 @media (max-width: $mobile-break) {
   .admin-layout {
     grid-template-columns: 1fr;
@@ -273,6 +283,21 @@ $mobile-break: 1024px;
   font-weight: 700;
 }
 
+.update-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #ef4444;
+  box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.3);
+}
+
+.nav-item {
+  position: relative;
+}
+
 .logout-btn {
   margin-top: auto;
   height: 48px;
@@ -323,7 +348,7 @@ $mobile-break: 1024px;
   font-size: 0.95rem;
 }
 
-/* Dark mode */
+
 html[data-theme='dark'] .glass {
   background: rgba(15, 23, 42, 0.62);
   border-color: rgba(226, 232, 240, 0.14);
@@ -347,7 +372,7 @@ html[data-theme='dark'] .workspace-sub {
   color: #94a3b8;
 }
 
-/* 更小屏微调 */
+
 @media (max-width: 768px) {
   .admin-layout {
     padding: 80px 12px 12px;

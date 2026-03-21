@@ -13,13 +13,11 @@ const formData = ref({
   siteName: '',
   siteDescription: '',
   siteAuthor: '',
-  siteVersion: '1.0.0',
   siteKeywords: '',
   musicPlaylistId: '',
   serverAddress: '',
   serverCreationDate: '',
   startYear: '',
-  copyright: '',
 })
 
 const errors = ref<Record<string, string>>({})
@@ -37,13 +35,11 @@ function loadConfig() {
     siteName: siteConfigStore.config.siteName || '',
     siteDescription: siteConfigStore.config.siteDescription || '',
     siteAuthor: siteConfigStore.config.siteAuthor || '',
-    siteVersion: siteConfigStore.config.siteVersion || '1.0.0',
     siteKeywords: siteConfigStore.config.siteKeywords || '',
     musicPlaylistId: siteConfigStore.config.musicPlaylistId || '',
     serverAddress: siteConfigStore.config.serverAddress || '',
     serverCreationDate: siteConfigStore.config.serverCreationDate || '',
     startYear: siteConfigStore.config.startYear || '',
-    copyright: siteConfigStore.config.copyright || '',
   }
 }
 
@@ -133,15 +129,17 @@ async function handleSubmit() {
         </div>
 
         <div class="form-group">
-          <label class="field-label" for="copyright">版权信息</label>
+          <label class="field-label" for="musicPlaylistId">网易云歌单 ID</label>
           <input
-              id="copyright"
-              v-model="formData.copyright"
+              id="musicPlaylistId"
+              v-model="formData.musicPlaylistId"
               class="input"
-              placeholder="版权所属"
+              placeholder="例如：123456789"
               type="text"
           />
+          <p class="hint-text">音乐播放器会优先解析这里配置的歌单。</p>
         </div>
+
       </div>
     </div>
 
@@ -161,16 +159,6 @@ async function handleSubmit() {
           <p class="hint-text">关键词用逗号分隔，有助于搜索引擎识别站点内容。</p>
         </div>
 
-        <div class="form-group">
-          <label class="field-label" for="siteVersion">站点版本</label>
-          <input
-              id="siteVersion"
-              v-model="formData.siteVersion"
-              class="input"
-              placeholder="1.0.0"
-              type="text"
-          />
-        </div>
 
         <div class="form-group">
           <label class="field-label" for="startYear">起始年份</label>
@@ -189,17 +177,6 @@ async function handleSubmit() {
       <h3 class="section-title">服务器与音乐配置</h3>
 
       <div class="form-grid">
-        <div class="form-group">
-          <label class="field-label" for="musicPlaylistId">网易云歌单 ID</label>
-          <input
-              id="musicPlaylistId"
-              v-model="formData.musicPlaylistId"
-              class="input"
-              placeholder="例如：123456789"
-              type="text"
-          />
-          <p class="hint-text">音乐播放器会优先解析这里配置的歌单。</p>
-        </div>
 
         <div class="form-group">
           <label class="field-label" for="serverAddress">服务器地址</label>

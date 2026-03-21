@@ -80,7 +80,7 @@ const memberList = ref<ServerMember[]>([])
 const errorMsg = ref('')
 const loading = ref(true)
 
-/* 解决 index 变化导致图片闪烁 */
+
 const loadedMap = ref<Record<string, boolean>>({})
 
 const introTexts = computed(() => [
@@ -98,7 +98,7 @@ const introTexts = computed(() => [
 
 const windowWidth = ref(window.innerWidth)
 
-/* 自适应列数 */
+
 const columnCount = computed(() => {
   const w = windowWidth.value
 
@@ -109,7 +109,7 @@ const columnCount = computed(() => {
   return 8
 })
 
-/* 瀑布流列 */
+
 const columns = computed(() => {
   const count = columnCount.value
   const result: ServerMember[][] = Array.from({length: count}, () => [])

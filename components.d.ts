@@ -1,9 +1,9 @@
-/* eslint-disable */
+
 
 
 export {}
 
-/* prettier-ignore */
+
 declare module 'vue' {
   export interface GlobalComponents {
     AdminGalleryEditView: typeof import('./src/views/admin/AdminGalleryEditView.vue')['default']

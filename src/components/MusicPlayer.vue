@@ -11,6 +11,7 @@ import {
   getPlaylistDetail,
   logout,
 } from '@/api/neteaseApi'
+import {checkAdminSession} from '@/api/adminAuthApi'
 import LoginModal from '@/components/music/LoginModal.vue'
 import LyricsDisplay from '@/components/music/LyricsDisplay.vue'
 import MusicConfigPanel from '@/components/music/MusicConfigPanel.vue'
@@ -43,6 +44,7 @@ const activeLoginTab = ref('qrcode')
 const qrCodeImage = ref('')
 
 const isLoggedIn = ref(false)
+const isAdminLoggedIn = ref(false)
 const shouldOpenPlayerAfterLogin = ref(false)
 const lastNonMusicRoute = ref('/')
 const userProfile = ref<UserProfile>({
@@ -51,6 +53,7 @@ const userProfile = ref<UserProfile>({
   avatarUrl: '',
   backgroundUrl: '',
 })
+const showLyrics = ref(true)
 
 const ENABLE_QR_LOGIN = String(import.meta.env.VITE_ENABLE_QR_LOGIN || 'false').toLowerCase() === 'true'
 const AUTO_PLAY = String(import.meta.env.VITE_AUTO_PLAY || 'false').toLowerCase() === 'true'
@@ -64,6 +67,9 @@ const duration = computed(() => musicStore.duration)
 const isOpen = computed(() => route.meta?.musicOverlay === true)
 const isConfigView = computed(() => route.meta?.musicView === 'config')
 const configuredPlaylistId = computed(() => String(siteConfigStore.config?.musicPlaylistId || '').trim())
+
+
+const isMobile = computed(() => window.innerWidth <= 768)
 
 const lyricRequests = new Map<string | number, Promise<TimedLyricLine[]>>()
 const urlRequests = new Map<string | number, Promise<string>>()
@@ -138,10 +144,10 @@ function parseLrc(raw: string) {
     const line = row.trim()
     if (!line) continue
 
-    const matches = [...line.matchAll(/\[(\d{1,2}):(\d{1,2})(?:[.:](\d{1,3}))?\]/g)]
+    const matches = [...line.matchAll(/\[(\d{1,2}):(\d{1,2})(?:[.:](\d{1,3}))?]/g)]
     if (matches.length === 0) continue
 
-    const text = line.replace(/\[(\d{1,2}):(\d{1,2})(?:[.:](\d{1,3}))?\]/g, '').trim()
+    const text = line.replace(/\[(\d{1,2}):(\d{1,2})(?:[.:](\d{1,3}))?]/g, '').trim()
     if (!text) continue
 
     for (const match of matches) {
@@ -469,6 +475,14 @@ async function loadPlaylist() {
   }
 }
 
+async function checkAdminLoginStatus() {
+  try {
+    isAdminLoggedIn.value = await checkAdminSession()
+  } catch {
+    isAdminLoggedIn.value = false
+  }
+}
+
 async function syncLoginStatus() {
   try {
     const response = await checkLoginStatus()
@@ -768,6 +782,18 @@ function togglePlayMode() {
   musicStore.togglePlayMode()
 }
 
+function toggleLyrics() {
+  showLyrics.value = !showLyrics.value
+}
+
+function handleLyricsClick() {
+
+  if (isMobile.value) {
+
+    showLyrics.value = !showLyrics.value
+  }
+}
+
 function handleTimeUpdate() {
   const audio = audioRef.value
   if (!audio) return
@@ -849,6 +875,7 @@ onMounted(async () => {
   }
 
   await syncLoginStatus()
+  await checkAdminLoginStatus()
 })
 
 onBeforeUnmount(() => {
@@ -877,7 +904,9 @@ onBeforeUnmount(() => {
         <div class="player-header">
           <h3 class="player-title">{{ isConfigView ? '播放器配置' : '音乐播放器' }}</h3>
           <div class="header-actions">
-            <button :title="isConfigView ? '返回播放器' : '播放器配置'" class="config-btn" @click="openConfig">
+            <button v-if="isAdminLoggedIn || isConfigView" :title="isConfigView ? '返回播放器' : '播放器配置'"
+                    class="config-btn"
+                    @click="openConfig">
               <svg v-if="isConfigView" fill="currentColor" height="22" viewBox="0 0 24 24" width="22">
                 <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20z"/>
               </svg>
@@ -886,7 +915,6 @@ onBeforeUnmount(() => {
                     d="M19.14 12.94c.04-.31.06-.63.06-.94s-.02-.63-.06-.94l2.03-1.58a.5.5 0 0 0 .12-.64l-1.92-3.32a.5.5 0 0 0-.6-.22l-2.39.96a7.18 7.18 0 0 0-1.63-.94l-.36-2.54a.49.49 0 0 0-.49-.42h-3.84a.49.49 0 0 0-.49.42l-.36 2.54c-.58.23-1.12.54-1.63.94l-2.39-.96a.5.5 0 0 0-.6.22L2.71 8.84a.5.5 0 0 0 .12.64l2.03 1.58c-.04.31-.06.63-.06.94s.02.63.06.94l-2.03 1.58a.5.5 0 0 0-.12.64l1.92 3.32c.13.22.39.31.6.22l2.39-.96c.5.4 1.05.72 1.63.94l.36 2.54c.05.24.25.42.49.42h3.84c.24 0 .44-.18.49-.42l.36-2.54c.58-.23 1.13-.54 1.63-.94l2.39.96c.22.09.47 0 .6-.22l1.92-3.32a.5.5 0 0 0-.12-.64l-2.03-1.58zM12 15.5A3.5 3.5 0 1 1 12 8.5a3.5 3.5 0 0 1 0 7z"/>
               </svg>
             </button>
-
             <button class="close-btn" @click="closePlayer">
               <svg fill="currentColor" height="24" viewBox="0 0 24 24" width="24">
                 <path
@@ -903,34 +931,36 @@ onBeforeUnmount(() => {
                               @saved="handleMusicConfigSaved"/>
           </div>
 
-          <div v-else key="player" class="player-content">
+          <div v-else key="player" :class="{ 'show-lyrics-only': isMobile && showLyrics }" class="player-content">
             <div class="left-section">
               <PlayerControls :current-time="currentTime" :current-track="currentTrack" :duration="duration"
-                              :is-playing="isPlaying" :play-mode="musicStore.playMode" @seek="seek"
+                              :is-playing="isPlaying" :play-mode="musicStore.playMode" :show-lyrics="showLyrics"
+                              @seek="seek"
                               @play-next="playNext" @play-previous="playPrevious" @toggle-play="togglePlay"
-                              @toggle-play-mode="togglePlayMode"/>
+                              @toggle-play-mode="togglePlayMode" @toggle-lyrics="toggleLyrics"/>
 
               <div class="music-list-section">
                 <h4 class="section-title">播放列表</h4>
-
                 <div v-if="isLoading" class="loading-state">
                   <div class="loading-spinner"></div>
                   <p>正在加载歌单...</p>
                 </div>
-
                 <div v-else-if="loadError" class="error-state">
                   <p>{{ loadError }}</p>
                   <button class="retry-btn" @click="loadPlaylist">重试</button>
                 </div>
-
                 <MusicList v-else :current-track-index="currentTrackIndex" :is-playing="isPlaying" :playlist="playlist"
                            @set-current-track="playTrack"/>
               </div>
             </div>
 
-            <div class="right-section">
-              <LyricsDisplay :current-time="currentTime" :current-track="currentTrack || null"/>
-            </div>
+            <!-- 整个右侧区域的动画容器 -->
+            <Transition :name="isMobile ? 'mobile-fade' : 'pc-slide'" mode="out-in">
+              <div v-if="showLyrics" key="right-panel" class="right-section">
+                <LyricsDisplay :current-time="currentTime" :current-track="currentTrack || null"
+                               @click="handleLyricsClick"/>
+              </div>
+            </Transition>
           </div>
         </Transition>
       </div>
@@ -988,12 +1018,10 @@ onBeforeUnmount(() => {
 }
 
 @keyframes pulse {
-
   0%,
   100% {
     box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.5);
   }
-
   50% {
     box-shadow: 0 0 0 16px rgba(255, 255, 255, 0);
   }
@@ -1006,16 +1034,6 @@ onBeforeUnmount(() => {
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   z-index: 1001;
-}
-
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.4s ease;
-}
-
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
 }
 
 .player-panel {
@@ -1037,53 +1055,6 @@ onBeforeUnmount(() => {
   overflow: hidden;
 }
 
-.slide-enter-active {
-  animation: slideInFromRight 0.5s cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.slide-leave-active {
-  animation: slideOutToLeft 0.4s ease forwards;
-}
-
-@keyframes slideInFromRight {
-  0% {
-    transform: translate(100%, -50%);
-    opacity: 0;
-  }
-
-  100% {
-    transform: translate(-50%, -50%);
-    opacity: 1;
-  }
-}
-
-@keyframes slideOutToLeft {
-  0% {
-    transform: translate(-50%, -50%);
-    opacity: 1;
-  }
-
-  100% {
-    transform: translate(-150%, -50%);
-    opacity: 0;
-  }
-}
-
-.panel-swap-enter-active,
-.panel-swap-leave-active {
-  transition: opacity 0.28s ease, transform 0.32s ease;
-}
-
-.panel-swap-enter-from {
-  opacity: 0;
-  transform: translateX(42px) scale(0.98);
-}
-
-.panel-swap-leave-to {
-  opacity: 0;
-  transform: translateX(-42px) scale(0.98);
-}
-
 .player-header {
   display: flex;
   justify-content: space-between;
@@ -1093,7 +1064,7 @@ onBeforeUnmount(() => {
 }
 
 .player-title {
-  color: #ffffff;
+  color: var(--color-text-black);
   font-size: 1.3rem;
   font-weight: 700;
   margin: 0;
@@ -1106,8 +1077,7 @@ onBeforeUnmount(() => {
   gap: 10px;
 }
 
-.config-btn,
-.close-btn {
+.config-btn, .close-btn, .lyrics-btn {
   background: rgba(0, 0, 0, 0.06);
   border: 1px solid rgba(255, 255, 255, 0.15);
   width: 40px;
@@ -1127,6 +1097,15 @@ onBeforeUnmount(() => {
   &:active {
     transform: scale(0.95);
   }
+
+  svg {
+    fill: var(--color-text-black);
+  }
+}
+
+.lyrics-btn:hover {
+  background: rgba(59, 130, 246, 0.15);
+  border-color: rgba(59, 130, 246, 0.32);
 }
 
 .config-btn:hover {
@@ -1144,6 +1123,7 @@ onBeforeUnmount(() => {
   flex: 1;
 }
 
+
 .player-content {
   display: flex;
   flex: 1;
@@ -1151,13 +1131,79 @@ onBeforeUnmount(() => {
 }
 
 .left-section {
-  width: 50%;
+  width: 90%;
   padding: 28px;
   overflow: hidden;
   border-right: 1px solid rgba(255, 255, 255, 0.12);
   display: flex;
   flex-direction: column;
   gap: 28px;
+
+  transition: width 0.4s cubic-bezier(0.25, 0.8, 0.25, 1),
+  border-right 0.4s ease;
+}
+
+
+.player-content:not(:has(.right-section)) .left-section {
+  width: 100%;
+  border-right: none;
+}
+
+
+.right-section {
+  padding: 28px;
+  overflow-y: auto;
+  box-sizing: border-box;
+}
+
+
+.pc-slide-enter-from {
+  transform: translateX(100%);
+}
+
+.pc-slide-enter-active {
+  transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.pc-slide-enter-to {
+  transform: translateX(0);
+}
+
+.pc-slide-leave-from {
+  transform: translateX(0);
+}
+
+.pc-slide-leave-active {
+  transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.pc-slide-leave-to {
+  transform: translateX(100%);
+}
+
+
+.mobile-fade-enter-from,
+.mobile-fade-leave-to {
+  opacity: 0;
+  height: 0 !important;
+  padding: 0 28px !important;
+  transform: translateY(100%);
+}
+
+.mobile-fade-enter-active,
+.mobile-fade-leave-active {
+  transition: opacity 0.3s cubic-bezier(0.25, 0.8, 0.25, 1),
+  height 0.3s cubic-bezier(0.25, 0.8, 0.25, 1),
+  padding 0.3s cubic-bezier(0.25, 0.8, 0.25, 1),
+  transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.mobile-fade-enter-to,
+.mobile-fade-leave-from {
+  opacity: 1;
+  height: auto !important;
+  padding: 28px !important;
+  transform: translateY(0);
 }
 
 .music-list-section {
@@ -1200,7 +1246,6 @@ onBeforeUnmount(() => {
   0% {
     transform: rotate(0deg);
   }
-
   100% {
     transform: rotate(360deg);
   }
@@ -1235,6 +1280,7 @@ onBeforeUnmount(() => {
   }
 }
 
+
 html[data-theme='dark'] .section-title {
   color: #f1f5f9;
 }
@@ -1257,12 +1303,6 @@ html[data-theme='dark'] .retry-btn:hover {
 html[data-theme='dark'] .loading-spinner {
   border-color: rgba(255, 255, 255, 0.2);
   border-top-color: #163779;
-}
-
-.right-section {
-  width: 50%;
-  padding: 28px;
-  overflow-y: auto;
 }
 
 html[data-theme='dark'] .player-panel {
@@ -1290,10 +1330,16 @@ html[data-theme='dark'] .player-title {
 }
 
 html[data-theme='dark'] .config-btn,
-html[data-theme='dark'] .close-btn {
+html[data-theme='dark'] .close-btn,
+html[data-theme='dark'] .lyrics-btn {
   color: #94a3b8;
   background: rgba(255, 255, 255, 0.06);
   border-color: rgba(255, 255, 255, 0.1);
+}
+
+html[data-theme='dark'] .lyrics-btn:hover {
+  background: rgba(59, 130, 246, 0.18);
+  border-color: rgba(59, 130, 246, 0.34);
 }
 
 html[data-theme='dark'] .config-btn:hover {
@@ -1310,61 +1356,84 @@ html[data-theme='dark'] .left-section {
   border-right-color: rgba(255, 255, 255, 0.06);
 }
 
+/* 过渡动画效果 */
+.fade-enter-active {
+  transition: opacity 0.3s ease;
+}
+
+.fade-leave-active {
+  transition: opacity 0.3s ease 0.4s;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+.slide-enter-active {
+  transition: transform 0.4s ease 0.3s;
+}
+
+.slide-leave-active {
+  transition: transform 0.4s ease;
+}
+
+.slide-enter-from {
+  transform: translate(-50%, -50%) translateX(100%);
+}
+
+.slide-leave-to {
+  transform: translate(-50%, -50%) translateX(-100%);
+}
+
+
 @media (max-width: 768px) {
   .player-panel {
-    width: 100%;
-    height: 90vh;
-    border-radius: 28px 28px 0 0;
-    top: auto;
-    left: 0;
-    transform: none;
-  }
-
-  .slide-enter-active {
-    animation: slideUpFromBottom 0.5s cubic-bezier(0.22, 1, 0.36, 1);
-  }
-
-  .slide-leave-active {
-    animation: slideDownToBottom 0.4s ease forwards;
-  }
-
-  @keyframes slideUpFromBottom {
-    0% {
-      transform: translateY(100%);
-      opacity: 0;
-    }
-
-    100% {
-      transform: translateY(0);
-      opacity: 1;
-    }
-  }
-
-  @keyframes slideDownToBottom {
-    0% {
-      transform: translateY(0);
-      opacity: 1;
-    }
-
-    100% {
-      transform: translateY(100%);
-      opacity: 0;
-    }
+    width: 90%;
+    height: 90%;
+    position: fixed;
+    border-radius: 28px;
   }
 
   .player-content {
     flex-direction: column;
   }
 
-  .left-section,
-  .right-section {
+  .left-section {
     width: 100%;
     border-right: none;
     border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+    box-sizing: border-box;
+
+    height: 100%;
+    opacity: 1;
+    padding: 28px;
   }
 
   .right-section {
+    width: 100%;
+    border-right: none;
     border-bottom: none;
+
+    height: 0;
+    padding: 0 28px;
+    opacity: 0;
+    overflow: hidden;
+    flex: 1;
+  }
+
+
+  .player-content.show-lyrics-only .left-section {
+    height: 0 !important;
+    padding: 0 28px !important;
+    opacity: 0 !important;
+    overflow: hidden;
+  }
+
+  .player-content.show-lyrics-only .right-section {
+    height: 100% !important;
+    padding: 28px !important;
+    opacity: 1 !important;
   }
 }
 </style>

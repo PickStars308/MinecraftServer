@@ -99,7 +99,7 @@ const Year = new Date().getFullYear();
     <Background/>
     <Toolbar v-if="showToolbar"/>
     <GlassToast/>
-    <MusicPlayer v-if="route.path !== '/install'"/>
+    <MusicPlayer v-if="route.path !== '/install' && !route.path.startsWith('/admin')"/>
     <main :class="{ 'no-toolbar': !showToolbar }" class="content-wrapper">
       <RouterView v-slot="{ Component }" :route="displayRoute">
         <Transition mode="out-in" name="fade-slide">
@@ -119,7 +119,7 @@ const Year = new Date().getFullYear();
 </template>
 
 <style scoped>
-/* 路由切换渐显动画 */
+
 .fade-slide-enter-active,
 .fade-slide-leave-active {
   transition: opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1),
@@ -172,14 +172,13 @@ const Year = new Date().getFullYear();
 }
 
 
-/* 全局页脚样式 */
 .global-footer {
   position: relative;
-  z-index: 10;
+
   width: 100%;
   padding: 20px 0;
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
+
+
   border-top: 1px solid rgba(255, 255, 255, 0.2);
 }
 
@@ -197,7 +196,7 @@ const Year = new Date().getFullYear();
   opacity: 0.7;
 }
 
-/* 深色主题适配 */
+
 html[data-theme='dark'] .global-footer {
   background: rgba(15, 23, 42, 0.6);
   border-top-color: rgba(255, 255, 255, 0.1);
@@ -208,7 +207,7 @@ html[data-theme='dark'] .footer-content p {
   opacity: 0.6;
 }
 
-/* 响应式适配 */
+
 @media (max-width: 768px) {
   .global-footer {
     padding: 16px 0;

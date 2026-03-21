@@ -8,6 +8,7 @@ const props = defineProps<{
   currentTime?: number
   duration?: number
   playMode?: PlayMode
+  showLyrics?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -16,6 +17,7 @@ const emit = defineEmits<{
   playNext: []
   seek: [time: number]
   togglePlayMode: []
+  toggleLyrics: []
 }>()
 
 const displayDuration = computed(() => Math.max(0, props.duration ?? props.currentTrack?.duration ?? 0))
@@ -52,9 +54,10 @@ function getPlayModeTitle() {
       </div>
 
       <div class="track-info-center">
-        <div v-if="props.currentTrack" class="track-name-large">{{ props.currentTrack.name }}</div>
+        <div v-if="props.currentTrack" class="track-name-large">{{ props.currentTrack.name }} -
+          {{ props.currentTrack.artist }}
+        </div>
         <div v-else class="track-name-large">请选择歌曲</div>
-        <div v-if="props.currentTrack" class="track-artist">{{ props.currentTrack.artist }}</div>
         <div v-if="props.currentTrack?.album" class="track-album">{{ props.currentTrack.album }}</div>
       </div>
     </div>
@@ -67,19 +70,29 @@ function getPlayModeTitle() {
           :value="displayCurrentTime"
           class="progress-bar"
           type="range"
-          @input="seek"
+          @input.stop="seek"
       />
       <span class="time-text">{{ formatTime(displayDuration) }}</span>
     </div>
 
     <div class="controls-large">
-      <button class="control-btn-large" title="上一首" @click="emit('playPrevious')">
+      <button :title="showLyrics ? '隐藏歌词' : '显示歌词'" class="control-btn-large"
+              @click.stop="emit('toggleLyrics')">
+        <svg class="icon" height="24"
+             viewBox="0 0 1024 1024" width="24" xmlns="http://www.w3.org/2000/svg">
+          <path
+              d="M512 0c282.766222 0 512 229.233778 512 512s-229.233778 512-512 512S0 794.766222 0 512 229.233778 0 512 0z m0 64C264.590222 64 64 264.590222 64 512S264.590222 960 512 960 960 759.409778 960 512 759.409778 64 512 64z m262.826667 183.694222V727.04c0 29.411556-6.883556 43.804444-25.656889 51.313778-20.024889 8.135111-53.191111 8.760889-103.879111 8.760889-2.503111-12.515556-9.386667-34.417778-15.644445-46.307556 38.172444 1.877333 75.093333 1.251556 86.357334 0.625778 10.638222 0 14.392889-3.754667 14.392888-14.392889V290.872889h-300.373333V247.694222H774.826667z m-408.007111 163.953778v263.452444l64.455111-45.056c3.128889 12.515556 10.012444 30.037333 13.767111 38.798223-98.929778 73.898667-118.414222 88.206222-128.142222 100.209777l-1.393778 1.792c-5.006222-9.386667-18.147556-25.031111-26.282667-31.914666 11.889778-9.386667 33.792-32.540444 33.792-63.829334v-219.022222H230.4v-44.430222h136.419556z m288.483555 43.804444v198.997334H512v41.927111h-41.927111v-240.924445h185.230222z m-41.927111 40.049778H512v118.272h101.376V495.502222z m71.964444-142.677333v40.049778h-239.672888v-40.049778h239.672888zM297.984 235.804444c33.166222 28.16 75.719111 66.958222 95.744 92.615112l-31.288889 32.540444c-18.773333-26.282667-60.700444-67.584-94.492444-96.369778z"
+          ></path>
+        </svg>
+      </button>
+
+      <button class="control-btn-large" title="上一首" @click.stop="emit('playPrevious')">
         <svg fill="currentColor" height="28" viewBox="0 0 24 24" width="28">
           <path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/>
         </svg>
       </button>
 
-      <button class="control-btn-large play-btn-large" title="播放或暂停" @click="emit('togglePlay')">
+      <button class="control-btn-large play-btn-large" title="播放或暂停" @click.stop="emit('togglePlay')">
         <svg v-if="isPlaying" fill="currentColor" height="32" viewBox="0 0 24 24" width="32">
           <path d="M6 19h4V5H6v14zm8-14v14h4V6h-4z"/>
         </svg>
@@ -88,13 +101,13 @@ function getPlayModeTitle() {
         </svg>
       </button>
 
-      <button class="control-btn-large" title="下一首" @click="emit('playNext')">
+      <button class="control-btn-large" title="下一首" @click.stop="emit('playNext')">
         <svg fill="currentColor" height="28" viewBox="0 0 24 24" width="28">
           <path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/>
         </svg>
       </button>
 
-      <button :title="getPlayModeTitle()" class="control-btn-large" @click="emit('togglePlayMode')">
+      <button :title="getPlayModeTitle()" class="control-btn-large" @click.stop="emit('togglePlayMode')">
         <!-- 顺序播放图标 -->
         <svg v-if="playMode === 'sequence'" fill="currentColor" height="24" viewBox="0 0 24 24" width="24">
           <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/>
@@ -104,12 +117,11 @@ function getPlayModeTitle() {
           <path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"/>
         </svg>
         <!-- 随机播放图标（修复缺角问题） -->
-        <svg v-else class="icon" height="24" p-id="5762" t="1774070872388"
-             version="1.1"
+        <svg v-else class="icon" height="24"
              viewBox="0 0 1024 1024" width="24" xmlns="http://www.w3.org/2000/svg">
           <path
               d="M768 763.008V682.666667l213.333333 128-213.333333 128v-89.173334a384 384 0 0 1-298.538667-228.906666L469.333333 620.373333l-0.128 0.256A384 384 0 0 1 116.266667 853.333333H85.333333v-85.333333h30.933334a298.666667 298.666667 0 0 0 274.517333-181.034667L422.912 512l-32.128-74.965333A298.666667 298.666667 0 0 0 116.266667 256H85.333333V170.666667h30.933334a384 384 0 0 1 352.938666 232.746666L469.333333 403.626667l0.128-0.256A384 384 0 0 1 768 174.506667V85.333333l213.333333 128-213.333333 128V260.992a298.666667 298.666667 0 0 0-220.117333 176.042667L515.754667 512l32.128 74.965333A298.666667 298.666667 0 0 0 768 763.008z"
-              p-id="5763"></path>
+          ></path>
         </svg>
       </button>
     </div>

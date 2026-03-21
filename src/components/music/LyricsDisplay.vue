@@ -7,6 +7,10 @@ const props = defineProps<{
   currentTime?: number
 }>()
 
+const emit = defineEmits<{
+  (e: 'click', scrolled: boolean): void
+}>()
+
 const lyricContainerRef = ref<HTMLElement | null>(null)
 const userScrolled = ref(false)
 const autoScrollTimer = ref<number | null>(null)
@@ -80,6 +84,10 @@ function handleUserScroll() {
   }, 5000)
 }
 
+function handleLyricsClick() {
+  emit('click', userScrolled.value)
+}
+
 watch(currentLineIndex, (newIndex) => {
   if (!userScrolled.value && newIndex >= 0) {
     void nextTick(() => {
@@ -112,7 +120,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div ref="lyricContainerRef" class="lyric-container">
+  <div ref="lyricContainerRef" class="lyric-container" @click="handleLyricsClick">
     <div class="lyric-wrapper">
       <div v-if="stateText" class="lyric-empty">
         {{ stateText }}
@@ -187,7 +195,4 @@ onUnmounted(() => {
   border-radius: 2px;
 }
 
-:deep(.dark) .lyric-container::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.2);
-}
 </style>

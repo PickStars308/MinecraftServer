@@ -150,12 +150,17 @@ const handleScroll = () => {
   background: rgba(255, 255, 255, 0.85);
 }
 
-.icon {
-  display: inline-flex;
+.sun,
+.moon {
+  position: absolute;
+  opacity: 1;
+  transition: opacity 0.2s ease;
 }
 
-.moon {
-  display: none;
+html:not([data-theme="dark"]) .moon,
+html[data-theme="dark"] .sun {
+  opacity: 0;
+  pointer-events: none;
 }
 
 html[data-theme="dark"] .toolbar {

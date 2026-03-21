@@ -69,7 +69,7 @@
   }
 }
 
-/* 深色主题适配 */
+
 html[data-theme='dark'] .app-loader {
   background: rgba(15, 23, 42, 0.4);
 }

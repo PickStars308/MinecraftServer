@@ -1,82 +1,77 @@
 import {ref} from 'vue';
-import {addToast} from '@/components/toast';
+import axios from 'axios';
 
-
-const currentHash = ref<string | null>(null);
-
+const currentVersion = '1.0.0';
+let latestVersion = ref<string>('');
 let updateCheckTimer: number | null = null;
 
 /**
- * 计算字符串的哈希值
- * @param str 要计算哈希值的字符串
- * @returns 哈希值
+ * 从GitHub API获取最新版本信息
+ * @returns 最新版本号
  */
-function calculateHash(str: string): string {
-    let hash = 0;
-    for (let i = 0; i < str.length; i++) {
-        const char = str.charCodeAt(i);
-        hash = ((hash << 5) - hash) + char;
-        hash = hash & hash;
-    }
-    return hash.toString();
-}
-
-/**
- * 获取最新页面的HTML内容
- * @returns 页面HTML内容
- */
-async function getLatestPageContent(): Promise<string> {
+async function getLatestVersionFromGitHub(): Promise<string | null> {
     try {
-        const response = await fetch('/', {
+        const response = await axios.get('https://api.github.com/repos/PickStars308/MinecraftServer/releases/latest', {
             headers: {
                 'Cache-Control': 'no-cache',
                 'Pragma': 'no-cache',
                 'Expires': '0'
             }
         });
-        return await response.text();
-    } catch (error) {
 
-        return '';
+        if (!response.data) {
+            return null;
+        }
+
+        const data = response.data;
+        return data.tag_name?.replace('v', '') || null;
+    } catch (error) {
+        console.error('获取GitHub版本信息失败:', error);
+        return null;
     }
 }
 
 /**
- * 检测页面是否有更新
+ * 比较版本号
+ * @param current 当前版本
+ * @param latest 最新版本
+ * @returns 是否需要更新
  */
-async function checkForUpdates() {
+function shouldUpdate(current: string, latest: string): boolean {
+    const currentParts = current.split('.').map(Number);
+    const latestParts = latest.split('.').map(Number);
+
+    for (let i = 0; i < Math.max(currentParts.length, latestParts.length); i++) {
+        const currentPart = currentParts[i] || 0;
+        const latestPart = latestParts[i] || 0;
+
+        if (latestPart > currentPart) {
+            return true;
+        } else if (latestPart < currentPart) {
+            return false;
+        }
+    }
+
+    return false;
+}
+
+/**
+ * 检测是否有更新
+ */
+export async function checkForUpdates() {
     try {
-        const latestContent = await getLatestPageContent();
-        if (!latestContent) return;
+        const latestVersionFromGitHub = await getLatestVersionFromGitHub();
+        if (!latestVersionFromGitHub) return;
 
-        const latestHash = calculateHash(latestContent);
+        latestVersion.value = latestVersionFromGitHub;
 
-
-        if (!currentHash.value) {
-            currentHash.value = latestHash;
-            return;
-        }
-
-
-        if (latestHash !== currentHash.value) {
-            currentHash.value = latestHash;
-            showUpdateToast();
+        if (shouldUpdate(currentVersion, latestVersionFromGitHub)) {
+            console.log(`检测到新版本 v${latestVersionFromGitHub}`);
+            return true
         }
     } catch (error) {
-
+        console.error('更新检测失败:', error);
     }
-}
-
-/**
- * 显示更新提示toast
- */
-function showUpdateToast() {
-    addToast('检测到新版本，将在5秒后自动更新', 'info', 5000, false);
-
-
-    setTimeout(() => {
-        window.location.reload();
-    }, 5000);
 }
 
 /**
@@ -84,10 +79,7 @@ function showUpdateToast() {
  * @param interval 检测间隔（毫秒），默认300000ms（5分钟）
  */
 export function startUpdateChecker(interval: number = 300000) {
-
     checkForUpdates();
-
-
     updateCheckTimer = window.setInterval(checkForUpdates, interval);
 }
 
@@ -99,4 +91,18 @@ export function stopUpdateChecker() {
         clearInterval(updateCheckTimer);
         updateCheckTimer = null;
     }
+}
+
+/**
+ * 获取当前版本
+ */
+export function getCurrentVersion(): string {
+    return currentVersion;
+}
+
+/**
+ * 获取最新版本
+ */
+export function getLatestVersion(): string {
+    return latestVersion.value;
 }

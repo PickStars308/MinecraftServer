@@ -213,7 +213,7 @@ $radius: 16px;
     line-height: 1.5;
   }
 
-  /* 核心布局 */
+
   .server-cards {
     display: flex;
     flex-wrap: wrap;
@@ -221,7 +221,7 @@ $radius: 16px;
     width: 100%;
   }
 
-  /* 默认 3 列 */
+
   .server-card {
     flex: 0 0 calc(33.333% - 19px);
     background: rgba(255, 255, 255, 0.15);
@@ -371,7 +371,7 @@ $radius: 16px;
     }
   }
 
-  /* 手机 */
+
   @media (max-width: 640px) {
     .server-card {
       flex: 0 0 100%;
@@ -379,7 +379,7 @@ $radius: 16px;
   }
 }
 
-/* 暗黑模式 */
+
 :deep(.dark) {
   .server-view {
     .main-title,

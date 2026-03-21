@@ -31,7 +31,7 @@ const emit = defineEmits<{
 const displayText = ref("")
 const currentTextIndex = ref(0)
 
-/* 随机顺序数组 */
+
 const order = ref<number[]>([])
 
 let charIndex = 0
@@ -46,14 +46,14 @@ const clearTimers = () => {
   }
 }
 
-/* 获取当前文本 */
+
 const getCurrentText = () => {
   const index = order.value[currentTextIndex.value]
   if (index === undefined) return undefined
   return props.texts[index]
 }
 
-/* 主流程 */
+
 const process = () => {
   if (!isTyping) return
 
@@ -64,7 +64,7 @@ const process = () => {
   }
 }
 
-/* 打字 */
+
 const typeChar = () => {
   const currentText = getCurrentText()
 
@@ -93,7 +93,7 @@ const typeChar = () => {
   }
 }
 
-/* 删除 */
+
 const deleteChar = () => {
 
   if (charIndex > 0) {
@@ -124,7 +124,7 @@ const deleteChar = () => {
   }
 }
 
-/* 初始化随机顺序 */
+
 const shuffle = () => {
   order.value = [...props.texts.keys()].sort(() => Math.random() - 0.5)
 }

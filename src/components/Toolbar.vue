@@ -181,11 +181,6 @@ const handleScroll = () => {
   background-color: rgba(0, 0, 0, 0.05);
 }
 
-.toolbar-link.router-link-active {
-  color: #ffffff;
-  background-color: #fb7ebb;
-}
-
 .right-section {
   display: flex;
   align-items: center;
@@ -217,13 +212,20 @@ const handleScroll = () => {
   transition: opacity 0.2s ease;
 }
 
-.sun {
-  display: inline-flex;
+.sun,
+.moon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  opacity: 1;
+  transition: opacity 0.2s ease;
 }
 
-.moon {
-  display: none;
-  position: absolute;
+html:not([data-theme="dark"]) .moon,
+html[data-theme="dark"] .sun {
+  opacity: 0;
+  pointer-events: none;
 }
 
 html[data-theme="dark"] .theme-toggle {
@@ -257,11 +259,6 @@ html[data-theme="dark"] .toolbar-link {
 html[data-theme="dark"] .toolbar-link:hover {
   color: #f8fafc;
   background-color: rgba(255, 255, 255, 0.1);
-}
-
-html[data-theme="dark"] .toolbar-link.router-link-active {
-  color: #ffffff;
-  background-color: #fb7ebb;
 }
 
 @media (max-width: 900px) {

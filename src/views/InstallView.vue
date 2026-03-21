@@ -103,12 +103,12 @@ const loadConfig = async () => {
         siteName: result.data.siteName || '',
         siteDescription: result.data.siteDescription || '',
         siteAuthor: result.data.siteAuthor || '',
-        siteVersion: result.data.siteVersion || '1.0.0',
+        siteVersion: '1.0.0',
         siteKeywords: result.data.siteKeywords || '',
         serverAddress: result.data.serverAddress || '',
         serverCreationDate: result.data.serverCreationDate || new Date().toISOString().split('T')[0],
         startYear: result.data.startYear || new Date().getFullYear().toString(),
-        copyright: result.data.copyright || 'PickStars',
+        copyright: 'PickStars',
       }
     }
   } catch (error: any) {
@@ -601,7 +601,7 @@ const submitInstall = async () => {
   height: 70px;
   border-radius: 50%;
   background: rgba(203, 213, 225, 0.5);
-  color: #64748b;
+  color: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;

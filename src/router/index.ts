@@ -21,7 +21,8 @@ const componentMap: Record<string, () => Promise<any>> = {
     AdminGalleryEditView: () => import('@/views/admin/AdminGalleryEditView.vue'),
     AdminTimelineEditView: () => import('@/views/admin/AdminTimelineEditView.vue'),
     AdminMembersEditView: () => import('@/views/admin/AdminMembersEditView.vue'),
-    AdminConfigEditView: () => import('@/views/admin/AdminConfigEditView.vue')
+    AdminConfigEditView: () => import('@/views/admin/AdminConfigEditView.vue'),
+    AdminAboutView: () => import('@/views/admin/AdminAboutView.vue')
 }
 
 function buildMusicRoutes(): RouteRecordRaw[] {
@@ -49,6 +50,7 @@ function buildMusicRoutes(): RouteRecordRaw[] {
                     path: 'config',
                     name: 'music-config',
                     component: resolveComponent('MusicOverlayView'),
+                    beforeEnter: requireAdminSession,
                     meta: {
                         hidden: true,
                         musicOverlay: true,
@@ -144,6 +146,13 @@ function buildAdminRoutes(): RouteRecordRaw[] {
                     component: resolveComponent('AdminConfigEditView'),
                     beforeEnter: requireAdminSession,
                     meta: {title: 'Site Config Edit', hideToolbar: true, hidden: true}
+                },
+                {
+                    path: 'about',
+                    name: 'admin-about',
+                    component: resolveComponent('AdminAboutView'),
+                    beforeEnter: requireAdminSession,
+                    meta: {title: 'About Project', hideToolbar: true, hidden: true}
                 }
             ]
         }
