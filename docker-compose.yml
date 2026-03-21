@@ -1,0 +1,44 @@
+services:
+  backend:
+    build:
+      context: ./ServerBackend
+      dockerfile: Dockerfile
+    container_name: minecraft-server-website-backend
+    restart: unless-stopped
+    env_file:
+      - ./ServerBackend/.env
+    environment:
+      PORT: 3003
+      CORS_ORIGIN: ${DOCKER_CORS_ORIGIN:-http://localhost:8080}
+    expose:
+      - "3001"
+    volumes:
+      - ./ServerBackend/config:/app/config
+      - ./ServerBackend/uploads:/app/uploads
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        VITE_API_BASE_URL: ${DOCKER_VITE_API_BASE_URL:-}
+        VITE_SITE_NAME: ${VITE_SITE_NAME:-My Server}
+        VITE_SITE_DESCRIPTION: ${VITE_SITE_DESCRIPTION:-Minecraft Server}
+        VITE_SITE_KEYWORDS: ${VITE_SITE_KEYWORDS:-}
+        VITE_SITE_AUTHOR: ${VITE_SITE_AUTHOR:-Admin}
+        VITE_SITE_LOGO: ${VITE_SITE_LOGO:-/logo.jpg}
+        VITE_CAESAR_OFFSET: ${VITE_CAESAR_OFFSET:-}
+        VITE_CAESAR_VALID_TOKEN: ${VITE_CAESAR_VALID_TOKEN:-}
+        VITE_AES_SECRET_KEY: ${VITE_AES_SECRET_KEY:-}
+        VITE_AES_IV: ${VITE_AES_IV:-}
+        VITE_ENABLE_PHONE_LOGIN: ${VITE_ENABLE_PHONE_LOGIN:-true}
+        VITE_ENABLE_COOKIE_LOGIN: ${VITE_ENABLE_COOKIE_LOGIN:-true}
+        VITE_ENABLE_QR_LOGIN: ${VITE_ENABLE_QR_LOGIN:-false}
+        VITE_NETEASE_PLAYLIST_ID: ${VITE_NETEASE_PLAYLIST_ID:-}
+        VITE_AUTO_PLAY: ${VITE_AUTO_PLAY:-false}
+    container_name: minecraft-server-website-frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "${FRONTEND_PORT:-8080}:80"

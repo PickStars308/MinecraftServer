@@ -15,10 +15,11 @@ const formData = ref({
   siteAuthor: '',
   siteVersion: '1.0.0',
   siteKeywords: '',
+  musicPlaylistId: '',
   serverAddress: '',
   serverCreationDate: '',
   startYear: '',
-  copyright: ''
+  copyright: '',
 })
 
 const errors = ref<Record<string, string>>({})
@@ -27,23 +28,26 @@ onMounted(() => {
   loadConfig()
 })
 
-const loadConfig = () => {
-  if (siteConfigStore.config) {
-    formData.value = {
-      siteName: siteConfigStore.config.siteName || '',
-      siteDescription: siteConfigStore.config.siteDescription || '',
-      siteAuthor: siteConfigStore.config.siteAuthor || '',
-      siteVersion: siteConfigStore.config.siteVersion || '1.0.0',
-      siteKeywords: siteConfigStore.config.siteKeywords || '',
-      serverAddress: siteConfigStore.config.serverAddress || '',
-      serverCreationDate: siteConfigStore.config.serverCreationDate || '',
-      startYear: siteConfigStore.config.startYear || '',
-      copyright: siteConfigStore.config.copyright || ''
-    }
+function loadConfig() {
+  if (!siteConfigStore.config) {
+    return
+  }
+
+  formData.value = {
+    siteName: siteConfigStore.config.siteName || '',
+    siteDescription: siteConfigStore.config.siteDescription || '',
+    siteAuthor: siteConfigStore.config.siteAuthor || '',
+    siteVersion: siteConfigStore.config.siteVersion || '1.0.0',
+    siteKeywords: siteConfigStore.config.siteKeywords || '',
+    musicPlaylistId: siteConfigStore.config.musicPlaylistId || '',
+    serverAddress: siteConfigStore.config.serverAddress || '',
+    serverCreationDate: siteConfigStore.config.serverCreationDate || '',
+    startYear: siteConfigStore.config.startYear || '',
+    copyright: siteConfigStore.config.copyright || '',
   }
 }
 
-const validateForm = (): boolean => {
+function validateForm() {
   errors.value = {}
 
   if (!formData.value.siteName.trim()) {
@@ -53,7 +57,7 @@ const validateForm = (): boolean => {
   return Object.keys(errors.value).length === 0
 }
 
-const handleSubmit = async () => {
+async function handleSubmit() {
   if (!validateForm()) {
     addToast('请检查并修正表单错误', 'error')
     return
@@ -65,16 +69,17 @@ const handleSubmit = async () => {
     const token = generateAuthToken()
     const result = await updateSiteConfig(formData.value, token)
 
-    if (result.success) {
-      addToast('配置保存成功，即将刷新页面', 'success')
-
-      siteConfigStore.updateConfig(formData.value)
-      setTimeout(() => {
-        window.location.reload()
-      }, 1500)
-    } else {
+    if (!result.success) {
       addToast(result.message || '配置保存失败', 'error')
+      return
     }
+
+    addToast('配置保存成功，即将刷新页面', 'success')
+    siteConfigStore.updateConfig(formData.value)
+
+    window.setTimeout(() => {
+      window.location.reload()
+    }, 1500)
   } catch (error: any) {
     console.error('保存配置失败:', error)
     addToast(error.message || '保存配置失败', 'error')
@@ -106,22 +111,18 @@ const handleSubmit = async () => {
         </div>
 
         <div class="form-group">
-          <label class="field-label" for="siteDescription">
-            站点描述
-          </label>
+          <label class="field-label" for="siteDescription">站点描述</label>
           <input
               id="siteDescription"
               v-model="formData.siteDescription"
               class="input"
-              placeholder="简短介绍你的服务器"
+              placeholder="简短介绍你的网站或服务器"
               type="text"
           />
         </div>
 
         <div class="form-group">
-          <label class="field-label" for="siteAuthor">
-            站点作者
-          </label>
+          <label class="field-label" for="siteAuthor">站点作者</label>
           <input
               id="siteAuthor"
               v-model="formData.siteAuthor"
@@ -132,14 +133,12 @@ const handleSubmit = async () => {
         </div>
 
         <div class="form-group">
-          <label class="field-label" for="copyright">
-            版权信息
-          </label>
+          <label class="field-label" for="copyright">版权信息</label>
           <input
               id="copyright"
               v-model="formData.copyright"
               class="input"
-              placeholder="版权所有者"
+              placeholder="版权所属"
               type="text"
           />
         </div>
@@ -147,27 +146,23 @@ const handleSubmit = async () => {
     </div>
 
     <div class="form-section">
-      <h3 class="section-title">SEO 优化配置</h3>
+      <h3 class="section-title">SEO 配置</h3>
 
       <div class="form-grid">
         <div class="form-group full-width">
-          <label class="field-label" for="siteKeywords">
-            站点关键词
-          </label>
+          <label class="field-label" for="siteKeywords">站点关键词</label>
           <input
               id="siteKeywords"
               v-model="formData.siteKeywords"
               class="input"
-              placeholder="Minecraft,我的世界,服务器,游戏（用逗号分隔）"
+              placeholder="Minecraft, 服务器, 游戏"
               type="text"
           />
-          <p class="hint-text">💡 关键词有助于搜索引擎找到你的服务器</p>
+          <p class="hint-text">关键词用逗号分隔，有助于搜索引擎识别站点内容。</p>
         </div>
 
         <div class="form-group">
-          <label class="field-label" for="siteVersion">
-            站点版本
-          </label>
+          <label class="field-label" for="siteVersion">站点版本</label>
           <input
               id="siteVersion"
               v-model="formData.siteVersion"
@@ -178,9 +173,7 @@ const handleSubmit = async () => {
         </div>
 
         <div class="form-group">
-          <label class="field-label" for="startYear">
-            起始年份
-          </label>
+          <label class="field-label" for="startYear">起始年份</label>
           <input
               id="startYear"
               v-model="formData.startYear"
@@ -193,13 +186,23 @@ const handleSubmit = async () => {
     </div>
 
     <div class="form-section">
-      <h3 class="section-title">服务器配置</h3>
+      <h3 class="section-title">服务器与音乐配置</h3>
 
       <div class="form-grid">
         <div class="form-group">
-          <label class="field-label" for="serverAddress">
-            服务器地址
-          </label>
+          <label class="field-label" for="musicPlaylistId">网易云歌单 ID</label>
+          <input
+              id="musicPlaylistId"
+              v-model="formData.musicPlaylistId"
+              class="input"
+              placeholder="例如：123456789"
+              type="text"
+          />
+          <p class="hint-text">音乐播放器会优先解析这里配置的歌单。</p>
+        </div>
+
+        <div class="form-group">
+          <label class="field-label" for="serverAddress">服务器地址</label>
           <input
               id="serverAddress"
               v-model="formData.serverAddress"
@@ -210,9 +213,7 @@ const handleSubmit = async () => {
         </div>
 
         <div class="form-group">
-          <label class="field-label" for="serverCreationDate">
-            服务器创建日期
-          </label>
+          <label class="field-label" for="serverCreationDate">服务器创建日期</label>
           <input
               id="serverCreationDate"
               v-model="formData.serverCreationDate"
@@ -220,17 +221,11 @@ const handleSubmit = async () => {
               type="date"
           />
         </div>
-
       </div>
     </div>
 
     <div class="form-actions">
-      <button
-          :disabled="loading"
-          class="btn-save"
-          type="button"
-          @click="handleSubmit"
-      >
+      <button :disabled="loading" class="btn-save" type="button" @click="handleSubmit">
         {{ loading ? '保存中...' : '保存配置' }}
       </button>
     </div>
@@ -350,7 +345,6 @@ const handleSubmit = async () => {
   }
 }
 
-/* Dark mode */
 html[data-theme='dark'] .form-section {
   background: rgba(15, 23, 42, 0.62);
   border-color: rgba(226, 232, 240, 0.14);

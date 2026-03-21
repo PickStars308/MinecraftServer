@@ -13,7 +13,7 @@ const SESSION_TTL_MS = 1000 * 60 * 60 * 8;
 const SESSION_SECRET = process.env.ADMIN_SESSION_SECRET || '';
 const isProd = process.env.NODE_ENV === 'production';
 
-// 延迟加载凭据，避免模块缓存问题
+
 function loadAdminCredentials() {
     let adminUsername = 'admin';
     let adminPasswordHash = null;
@@ -42,10 +42,10 @@ function loadAdminCredentials() {
             adminUsername = process.env.ADMIN_USERNAME || 'admin';
             const plainPassword = process.env.ADMIN_PASSWORD || '';
             adminPasswordHash = crypto.createHash('sha256').update(plainPassword).digest('hex');
-            console.log('[登录验证] 使用默认管理员账户（未检测到加密配置）');
+
         }
     } catch (error) {
-        console.error('[登录验证] 读取加密配置失败:', error.message);
+
         adminUsername = process.env.ADMIN_USERNAME || 'admin';
         const plainPassword = process.env.ADMIN_PASSWORD || '';
         adminPasswordHash = crypto.createHash('sha256').update(plainPassword).digest('hex');
@@ -129,7 +129,7 @@ function hashPassword(password) {
 router.post('/admin/login', (req, res) => {
     cleanupExpiredSessions();
 
-    // 每次请求时动态加载凭据，确保获取最新配置
+
     const {adminUsername, adminPasswordHash} = loadAdminCredentials();
 
     const {username, password} = req.body || {};

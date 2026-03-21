@@ -7,10 +7,15 @@ const memberRoutes = require('./memberRoutes');
 const adminAuthRoutes = require('./adminAuthRoutes');
 const timelineImageRoutes = require('./timelineImageRoutes');
 const installRoutes = require('./installRoutes');
+const neteaseRoutes = require('./neteaseRoutes');
+const neteaseMusicRoutes = require('./neteaseMusicRoutes');
 
 
 router.use('/', commonRoutes);
 
+
+router.use('/api/netease', neteaseRoutes);
+router.use('/api/netease/music', neteaseMusicRoutes);
 
 router.use('/api/install', installRoutes);
 

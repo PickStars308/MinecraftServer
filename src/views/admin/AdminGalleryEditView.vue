@@ -177,7 +177,7 @@ const ServerURL = import.meta.env.VITE_API_BASE_URL;
       <p v-else class="empty">暂无图片</p>
     </article>
 
-    <!-- 删除确认弹窗 -->
+
     <GlassDialog
         :visible="showDeleteDialog"
         cancel-text="取消"
@@ -189,7 +189,7 @@ const ServerURL = import.meta.env.VITE_API_BASE_URL;
         @confirm="handleDeleteConfirm"
     />
 
-    <!-- 上传图片弹窗 -->
+
     <GlassUploadDialog
         :visible="showUploadDialog"
         cancel-text="取消"

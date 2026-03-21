@@ -237,7 +237,7 @@ const ServerPic = import.meta.env.VITE_API_BASE_URL
       </div>
     </article>
 
-    <!-- 图片上传对话框 -->
+
     <GlassUploadDialogTimeline
         :visible="uploadDialogVisible"
         label1="图片名称"
@@ -247,7 +247,7 @@ const ServerPic = import.meta.env.VITE_API_BASE_URL
         @upload-success="handleImageUpload"
     />
 
-    <!-- 删除确认弹窗 -->
+
     <GlassDialog
         :visible="showDeleteDialog"
         cancel-text="取消"

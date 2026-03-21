@@ -179,7 +179,7 @@ router.get('/images', authMiddleware, async (req, res) => {
         });
 
     } catch (error) {
-        console.error('获取图片列表失败：', error);
+
         res.status(500).json({
             success: false,
             message: '获取图片列表失败',
@@ -224,7 +224,7 @@ router.delete('/images/:filename', authMiddleware, async (req, res) => {
         });
 
     } catch (error) {
-        console.error('删除图片失败：', error);
+
         res.status(500).json({
             success: false,
             message: '删除图片失败',
@@ -307,7 +307,7 @@ router.put('/images/:filename', authMiddleware, async (req, res) => {
         });
 
     } catch (error) {
-        console.error('编辑图片信息失败：', error);
+
         res.status(500).json({
             success: false,
             message: '编辑图片信息失败',
@@ -377,7 +377,7 @@ router.post('/images/upload', authMiddleware, upload.array('images'), async (req
         });
 
     } catch (error) {
-        console.error('上传图片失败：', error);
+
         res.status(500).json({
             success: false,
             message: '上传图片失败',

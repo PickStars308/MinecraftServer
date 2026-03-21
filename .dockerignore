@@ -1,0 +1,16 @@
+node_modules
+dist
+.git
+.github
+.idea
+.vscode
+.trae
+.vite
+.npm-cache
+ServerBackend/node_modules
+ServerBackend/uploads
+ServerBackend/config/admin.enc
+ServerBackend/config/history.json
+ServerBackend/config/members.json
+ServerBackend/config/music/cookie.json
+ServerBackend/uploads

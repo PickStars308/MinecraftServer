@@ -10,7 +10,7 @@ const configPath = path.join(__dirname, '../config/config.json');
 function initConfig() {
 
     if (fs.existsSync(configPath)) {
-        console.log('✅ 配置文件已存在，跳过初始化');
+
         return false;
     }
 
@@ -37,7 +37,7 @@ function initConfig() {
                     }
                 }
             });
-            console.log('📄 已从根目录 .env 加载配置');
+
         }
 
 
@@ -48,6 +48,7 @@ function initConfig() {
             siteAuthor: process.env.VITE_SITE_AUTHOR || rootEnvConfig.VITE_SITE_AUTHOR || 'Admin',
             siteVersion: process.env.VITE_SITE_VERSION || rootEnvConfig.VITE_SITE_VERSION || '1.0.0',
             siteKeywords: process.env.VITE_SITE_KEYWORDS || rootEnvConfig.VITE_SITE_KEYWORDS || '',
+            musicPlaylistId: process.env.VITE_NETEASE_PLAYLIST_ID || rootEnvConfig.VITE_NETEASE_PLAYLIST_ID || '',
 
 
             serverAddress: process.env.VITE_SERVER_ADDRESS || rootEnvConfig.VITE_SERVER_ADDRESS || 'localhost',
@@ -61,12 +62,10 @@ function initConfig() {
 
         fs.writeFileSync(configPath, JSON.stringify(config, null, 2), 'utf8');
 
-        console.log('✅ 配置文件创建成功:', configPath);
-        console.log('📄 配置内容:', JSON.stringify(config, null, 2));
 
         return true;
     } catch (error) {
-        console.error('❌ 创建配置文件失败:', error.message);
+
         throw error;
     }
 }
@@ -84,7 +83,7 @@ function getConfig() {
         const configData = fs.readFileSync(configPath, 'utf8');
         return JSON.parse(configData);
     } catch (error) {
-        console.error('读取配置文件失败:', error.message);
+
         return null;
     }
 }
@@ -100,11 +99,11 @@ function updateConfig(newConfig) {
         const updatedConfig = {...currentConfig, ...newConfig};
 
         fs.writeFileSync(configPath, JSON.stringify(updatedConfig, null, 2), 'utf8');
-        console.log('✅ 配置文件更新成功');
+
 
         return true;
     } catch (error) {
-        console.error('更新配置文件失败:', error.message);
+
         return false;
     }
 }

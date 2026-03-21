@@ -1,13 +1,14 @@
 <script lang="ts" setup>
 import useThemeStore from './stores/theme'
 import useSiteConfigStore from './stores/siteConfig'
-import {computed, onMounted, onUnmounted, ref} from 'vue'
+import {computed, onMounted, onUnmounted, ref, shallowRef, watch} from 'vue'
 import {useRoute, useRouter} from 'vue-router'
 import Background from "@/components/Background.vue";
 import Toolbar from "@/components/Toolbar.vue";
 import GlassToast from "@/components/toast/GlassToast.vue";
 import AppLoader from "@/components/AppLoader.vue";
 import DynamicMeta from "@/components/DynamicMeta.vue";
+import MusicPlayer from "@/components/MusicPlayer.vue";
 import {startUpdateChecker, stopUpdateChecker} from "@/utils/updateChecker";
 import {checkInstallStatus as checkInstallStatusApi} from "@/api/installApi";
 
@@ -15,11 +16,31 @@ const themeStore = useThemeStore()
 const siteConfigStore = useSiteConfigStore()
 const route = useRoute()
 const router = useRouter()
-const showToolbar = computed(() => !route.meta?.hideToolbar)
-const viewKey = computed(() => route.path)
 const isLoading = ref(true)
+const backgroundRoute = shallowRef<any>(null)
 
 themeStore.initTheme()
+
+watch(
+    () => route.fullPath,
+    () => {
+      if (!route.meta?.musicOverlay) {
+        backgroundRoute.value = route
+      }
+    },
+    {immediate: true}
+)
+
+const displayRoute = computed(() => {
+  if (route.meta?.musicOverlay) {
+    return backgroundRoute.value || router.resolve('/')
+  }
+
+  return route
+})
+
+const showToolbar = computed(() => !displayRoute.value.meta?.hideToolbar)
+const viewKey = computed(() => displayRoute.value.fullPath)
 
 
 async function checkInstallStatus(): Promise<boolean> {
@@ -78,8 +99,9 @@ const Year = new Date().getFullYear();
     <Background/>
     <Toolbar v-if="showToolbar"/>
     <GlassToast/>
+    <MusicPlayer v-if="route.path !== '/install'"/>
     <main :class="{ 'no-toolbar': !showToolbar }" class="content-wrapper">
-      <RouterView v-slot="{ Component }">
+      <RouterView v-slot="{ Component }" :route="displayRoute">
         <Transition mode="out-in" name="fade-slide">
           <component :is="Component" :key="viewKey"/>
         </Transition>

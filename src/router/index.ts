@@ -16,11 +16,48 @@ const componentMap: Record<string, () => Promise<any>> = {
     AdminPanelView: () => import('@/views/AdminPanelView.vue'),
     InstallView: () => import('@/views/InstallView.vue'),
     ErrorView: () => import('@/views/ErrorView.vue'),
+    MusicOverlayView: () => import('@/views/MusicOverlayView.vue'),
     AdminOverviewView: () => import('@/views/admin/AdminOverviewView.vue'),
     AdminGalleryEditView: () => import('@/views/admin/AdminGalleryEditView.vue'),
     AdminTimelineEditView: () => import('@/views/admin/AdminTimelineEditView.vue'),
     AdminMembersEditView: () => import('@/views/admin/AdminMembersEditView.vue'),
     AdminConfigEditView: () => import('@/views/admin/AdminConfigEditView.vue')
+}
+
+function buildMusicRoutes(): RouteRecordRaw[] {
+    return [
+        {
+            path: '/music',
+            component: resolveComponent('MusicOverlayView'),
+            redirect: '/music/player',
+            meta: {
+                hidden: true,
+                musicOverlay: true
+            },
+            children: [
+                {
+                    path: 'player',
+                    name: 'music-player',
+                    component: resolveComponent('MusicOverlayView'),
+                    meta: {
+                        hidden: true,
+                        musicOverlay: true,
+                        musicView: 'player'
+                    }
+                },
+                {
+                    path: 'config',
+                    name: 'music-config',
+                    component: resolveComponent('MusicOverlayView'),
+                    meta: {
+                        hidden: true,
+                        musicOverlay: true,
+                        musicView: 'config'
+                    }
+                }
+            ]
+        }
+    ]
 }
 
 const resolveComponent = (name: string): (() => Promise<any>) => componentMap[name] ?? fallbackComponent
@@ -161,6 +198,7 @@ async function loadRoutesFromConfig(): Promise<RouteRecordRaw[]> {
                 }
             },
             ...dynamicRoutes,
+            ...buildMusicRoutes(),
             ...buildAdminRoutes()
         ]
     } catch (error) {
@@ -193,6 +231,7 @@ async function loadRoutesFromConfig(): Promise<RouteRecordRaw[]> {
             {path: '/gallery', component: resolveComponent('GalleryView')},
             {path: '/experience', component: resolveComponent('ExperienceView')},
             {path: '/members', component: resolveComponent('MembersView')},
+            ...buildMusicRoutes(),
             ...buildAdminRoutes()
         ]
     }

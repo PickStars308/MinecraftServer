@@ -79,7 +79,7 @@ async function readHistoryFromJson() {
             return [];
         }
 
-        console.error('读取历程 JSON 文件失败：', error.message);
+
         return [];
     }
 }
@@ -95,7 +95,7 @@ router.get('/history', authMiddleware, async (req, res) => {
         });
 
     } catch (error) {
-        console.error('获取服务器历程失败：', error);
+
         res.status(500).json({
             success: false,
             message: "加载服务器历程失败",
@@ -136,7 +136,7 @@ router.post('/history', authMiddleware, async (req, res) => {
         });
 
     } catch (error) {
-        console.error('保存服务器历程失败：', error);
+
         res.status(500).json({
             success: false,
             message: "保存服务器历程失败",

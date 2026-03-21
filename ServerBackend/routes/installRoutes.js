@@ -89,7 +89,7 @@ router.post('/', authMiddleware, (req, res) => {
             res.status(400).json(result);
         }
     } catch (error) {
-        console.error('执行安装失败:', error);
+
         res.status(500).json({
             success: false,
             message: '执行安装失败',
@@ -118,7 +118,7 @@ router.get('/config', authMiddleware, (req, res) => {
             data: config
         });
     } catch (error) {
-        console.error('[安装路由] 获取配置失败:', error);
+
         res.status(500).json({
             success: false,
             message: '获取配置失败',
@@ -157,7 +157,7 @@ router.put('/config', authMiddleware, (req, res) => {
             });
         }
     } catch (error) {
-        console.error('[安装路由] 更新配置失败:', error);
+
         res.status(500).json({
             success: false,
             message: '更新配置失败',

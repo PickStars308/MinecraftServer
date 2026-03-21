@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <Teleport to="body">
     <div v-show="toasts.length" :class="position" class="glass-toast-container">
       <TransitionGroup appear name="toast-list" tag="div">
@@ -35,7 +35,6 @@ import {getIcon, position, removeToast, toasts} from '@/components/toast';
   gap: 12px;
   padding: 20px;
   pointer-events: none;
-  width: 100%;
   max-width: 420px;
 
   &.top-left {
@@ -53,26 +52,30 @@ import {getIcon, position, removeToast, toasts} from '@/components/toast';
 
   &.top-right {
     top: 16px;
-    right: 0;
+    right: 16px;
+    left: auto;
     align-items: flex-end;
   }
 
   &.bottom-left {
     bottom: 16px;
     left: 16px;
+    right: auto;
     align-items: flex-start;
   }
 
   &.bottom-center {
     bottom: 16px;
     left: 50%;
+    right: auto;
     transform: translateX(-50%);
     align-items: center;
   }
 
   &.bottom-right {
     bottom: 16px;
-    right: 0;
+    right: 16px;
+    left: auto;
     align-items: flex-end;
   }
 }

@@ -169,7 +169,7 @@ npm run dev
 
 ## 📋 部署指南
 
-### 生产环境构建
+### 传统部署
 
 #### 1. 构建前端
 
@@ -199,6 +199,81 @@ pm2 startup
 #### 3. 部署前端
 
 将 `dist/` 目录内容上传到 Web 服务器
+
+### Docker 部署
+
+#### 前置要求
+- 已安装 Docker 和 Docker Compose
+
+#### 1. 配置环境变量
+
+**创建后端环境文件：**
+
+```bash
+cd ServerBackend
+cp .env.example .env
+```
+
+编辑 `ServerBackend/.env` 文件，配置你的服务器信息：
+
+```bash
+PORT=3003
+MC_SERVER_IP=localhost
+MC_SERVER_PORT=25565
+ADMIN_SESSION_SECRET=你的密钥
+```
+
+**创建根目录环境文件：**
+
+```bash
+cp .env.example .env
+```
+
+编辑 `.env` 文件，配置你的网站信息：
+
+```bash
+# 前端配置
+VITE_SITE_NAME=我的服务器
+VITE_API_BASE_URL=http://localhost:8080/api
+
+# Docker 配置
+DOCKER_VITE_API_BASE_URL=http://localhost:8080/api
+DOCKER_CORS_ORIGIN=http://localhost:8080
+FRONTEND_PORT=8080
+```
+
+#### 2. 使用 Docker Compose 启动
+
+```bash
+docker-compose up -d --build
+```
+
+这将：
+- 构建并启动后端服务（内部端口 3001）
+- 构建并启动前端服务（默认端口 8080）
+- 设置卷挂载以实现数据持久化
+
+#### 3. 访问网站
+
+访问：http://localhost:8080
+
+#### 4. Docker 环境变量
+
+| 变量 | 描述 | 默认值 |
+|------|------|--------|
+| `VITE_SITE_NAME` | 网站名称 | My Server |
+| `VITE_API_BASE_URL` | API 基础 URL | http://localhost:8080/api |
+| `DOCKER_VITE_API_BASE_URL` | Docker 内部 API URL | http://localhost:8080/api |
+| `DOCKER_CORS_ORIGIN` | 后端 CORS 源 | http://localhost:8080 |
+| `FRONTEND_PORT` | 前端端口 | 8080 |
+
+#### 5. Docker 命令
+
+- **启动服务：** `docker-compose up -d`
+- **停止服务：** `docker-compose down`
+- **重启服务：** `docker-compose restart`
+- **查看日志：** `docker-compose logs -f`
+- **重新构建：** `docker-compose up -d --build`
 
 ---
 

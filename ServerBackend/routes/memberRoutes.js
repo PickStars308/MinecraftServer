@@ -68,7 +68,7 @@ async function readMembersFromJson() {
         return validMembers;
 
     } catch (error) {
-        console.error('读取成员 JSON 文件失败：', error.message);
+
         return [];
     }
 }
@@ -84,7 +84,7 @@ router.get('/members', authMiddleware, async (req, res) => {
         });
 
     } catch (error) {
-        console.error('获取成员列表失败：', error);
+
         res.status(500).json({
             success: false,
             message: "加载成员列表失败",
@@ -125,7 +125,7 @@ router.post('/members', authMiddleware, async (req, res) => {
         });
 
     } catch (error) {
-        console.error('保存成员列表失败：', error);
+
         res.status(500).json({
             success: false,
             message: "保存成员列表失败",
@@ -185,7 +185,7 @@ router.post('/members/add', authMiddleware, async (req, res) => {
         });
 
     } catch (error) {
-        console.error('添加成员失败：', error);
+
         res.status(500).json({
             success: false,
             message: "添加成员失败",
@@ -226,7 +226,7 @@ router.delete('/members/:uuid', authMiddleware, async (req, res) => {
         });
 
     } catch (error) {
-        console.error('删除成员失败：', error);
+
         res.status(500).json({
             success: false,
             message: "删除成员失败",

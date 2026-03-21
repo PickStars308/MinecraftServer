@@ -197,14 +197,14 @@ const submitInstall = async () => {
 <template>
   <section class="install-view">
     <div class="install-card">
-      <!-- 头部 -->
+
       <div class="install-header">
         <p class="eyebrow">初始化配置</p>
         <h1 class="title">安装向导</h1>
         <p class="subtitle">只需几步，完成网站初始化配置</p>
       </div>
 
-      <!-- 进度指示器 -->
+
       <div class="progress-section">
         <div class="step-indicators">
           <div
@@ -216,9 +216,9 @@ const submitInstall = async () => {
         </div>
       </div>
 
-      <!-- 表单内容 -->
+
       <div class="install-content">
-        <!-- 步骤 1: 管理员账户 -->
+
         <transition mode="out-in" name="slide-fade">
           <div v-if="currentStep === 1" key="step1" class="step-content">
             <h2 class="step-title">创建管理员账户</h2>
@@ -273,7 +273,7 @@ const submitInstall = async () => {
             </div>
           </div>
 
-          <!-- 步骤 2: Meta 信息配置 -->
+
           <div v-else-if="currentStep === 2" key="step2" class="step-content">
             <h2 class="step-title">配置网站 Meta 信息</h2>
 
@@ -313,7 +313,7 @@ const submitInstall = async () => {
                   id="siteKeywords"
                   v-model="configFormData.siteKeywords"
                   class="input"
-                  placeholder="Minecraft，我的世界，服务器，游戏（用逗号分隔）"
+                  placeholder="Minecraft,我的世界,服务器,游戏（用逗号分隔）"
                   type="text"
               />
               <p class="hint-text">💡 多个关键词用逗号分隔</p>
@@ -352,7 +352,7 @@ const submitInstall = async () => {
             </div>
           </div>
 
-          <!-- 步骤 3: 服务器配置 -->
+
           <div v-else-if="currentStep === 3" key="step3" class="step-content">
             <h2 class="step-title">配置 Minecraft 服务器</h2>
 
@@ -415,7 +415,7 @@ const submitInstall = async () => {
             </div>
           </div>
 
-          <!-- 步骤 4: 确认安装 -->
+
           <div v-else-if="currentStep === 4" key="step4" class="step-content">
             <h2 class="step-title">确认安装信息</h2>
 
@@ -481,7 +481,7 @@ const submitInstall = async () => {
         </transition>
       </div>
 
-      <!-- 底部按钮 -->
+
       <div class="install-footer">
         <button
             v-if="currentStep > 1"

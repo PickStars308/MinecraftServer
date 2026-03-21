@@ -36,7 +36,7 @@ async function getLatestPageContent(): Promise<string> {
         });
         return await response.text();
     } catch (error) {
-        console.error('获取页面内容失败:', error);
+
         return '';
     }
 }
@@ -63,7 +63,7 @@ async function checkForUpdates() {
             showUpdateToast();
         }
     } catch (error) {
-        console.error('检测更新失败:', error);
+
     }
 }
 

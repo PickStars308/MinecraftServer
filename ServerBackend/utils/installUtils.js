@@ -3,7 +3,8 @@ const path = require('path');
 const crypto = require('crypto');
 require('dotenv').config();
 
-const encryptedConfigPath = path.join(__dirname, '../config', 'admin.enc');
+const configDir = path.join(__dirname, '../config');
+const encryptedConfigPath = path.join(configDir, 'admin.enc');
 
 
 const ENCRYPTION_KEY = process.env.AES_SECRET_KEY || '';
@@ -35,8 +36,42 @@ function decrypt(text) {
         decrypted += decipher.final('utf8');
         return decrypted;
     } catch (error) {
-        console.error('[加密] 解密失败:', error.message);
+
         return null;
+    }
+}
+
+/**
+ * 初始化配置文件夹和文件
+ */
+function initConfigFiles() {
+    try {
+
+        if (!fs.existsSync(configDir)) {
+            fs.mkdirSync(configDir, {recursive: true});
+
+        }
+
+
+        const membersConfigPath = path.join(configDir, 'members.json');
+        if (!fs.existsSync(membersConfigPath)) {
+            const emptyMembers = [];
+            fs.writeFileSync(membersConfigPath, JSON.stringify(emptyMembers, null, 2), 'utf-8');
+
+        }
+
+
+        const historyConfigPath = path.join(configDir, 'history.json');
+        if (!fs.existsSync(historyConfigPath)) {
+            const emptyHistory = [];
+            fs.writeFileSync(historyConfigPath, JSON.stringify(emptyHistory, null, 2), 'utf-8');
+
+        }
+
+        return true;
+    } catch (error) {
+
+        return false;
     }
 }
 
@@ -73,7 +108,7 @@ function getInstallConfig() {
             adminPasswordHash: passwordHash || ''
         };
     } catch (error) {
-        console.error('[配置] 读取安装配置失败:', error);
+
         return {installed: false};
     }
 }
@@ -89,11 +124,10 @@ function saveInstallConfig(config) {
         fs.writeFileSync(encryptedConfigPath, encryptedData, 'utf-8');
         return true;
     } catch (error) {
-        console.error('[配置] 保存安装配置失败:', error);
+
         return false;
     }
 }
-
 
 /**
  * 密码加密（使用 bcrypt 或简单的 hash）
@@ -146,7 +180,9 @@ function performInstall(installData) {
 
 
 module.exports = {
+    initConfigFiles,
     getInstallConfig,
     performInstall,
-    decrypt
+    decrypt,
+    hashPassword
 };

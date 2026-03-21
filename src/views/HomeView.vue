@@ -24,6 +24,7 @@ const serverInfo = ref({
   status: false,
   players: [] as Player[],
   icon: '',
+  serverAddress: '',
   ping: 0,
   loading: true
 })
@@ -63,26 +64,17 @@ const updateServerInfo = (data: any) => {
     status: data.online || false,
     players: newPlayers,
     icon: data.icon || '',
+    serverAddress: data.serverAddress || siteConfigStore.config?.serverAddress || 'localhost',
     ping: data.ping || 0,
     loading: false
   }
 
 }
 
-const VITESERVERADDRESS = import.meta.env.VITE_API_BASE_URL
-
 onMounted(() => {
 
   socket = io(VITE_API_URL, {
     transports: ["websocket"]
-  })
-
-  socket.on("connect", () => {
-
-    socket?.emit("queryServer", {
-      host: VITESERVERADDRESS
-    })
-
   })
 
   socket.on("disconnect", () => {
@@ -116,6 +108,7 @@ const handleRefresh = () => {
 </script>
 
 <template>
+
   <div class="home-view">
     <h1 class="main-title">
       <Typewriter
@@ -138,7 +131,7 @@ const handleRefresh = () => {
         version: serverInfo.version,
         motd: serverInfo.motd,
         status: serverInfo.status ? 'online' : 'offline',
-        serverAddress: siteConfigStore.config?.serverAddress || 'localhost',
+        serverAddress: serverInfo.serverAddress || siteConfigStore.config?.serverAddress || 'localhost',
         players: serverInfo.players.map((p) => ({
           uuid: p.uuid,
           name_raw: p.name,

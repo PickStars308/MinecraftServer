@@ -56,6 +56,13 @@ export function aesEncrypt(str: string): string {
  */
 export function generateAuthToken(): string {
     const baseToken = CRYPTO_CONFIG.CAESAR.VALID_TOKEN;
+
+    if (!baseToken) {
+
+    }
+
     const caesarToken = caesarEncrypt(baseToken);
-    return aesEncrypt(caesarToken);
+    const encrypted = aesEncrypt(caesarToken);
+
+    return encrypted;
 }

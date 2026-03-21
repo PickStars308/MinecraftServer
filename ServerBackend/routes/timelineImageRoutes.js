@@ -128,7 +128,7 @@ router.post('/timeline/images/upload', authMiddleware, upload.single('image'), a
         });
 
     } catch (error) {
-        console.error('上传时间线图片失败：', error);
+
         res.status(500).json({
             success: false,
             message: "图片上传失败",
@@ -198,7 +198,7 @@ router.put('/timeline/images/:filename', authMiddleware, async (req, res) => {
         });
 
     } catch (error) {
-        console.error('编辑时间线图片信息失败：', error);
+
         res.status(500).json({
             success: false,
             message: "图片信息修改失败",
@@ -240,7 +240,7 @@ router.delete('/timeline/images/:filename', authMiddleware, async (req, res) => 
         });
 
     } catch (error) {
-        console.error('删除时间线图片失败：', error);
+
         res.status(500).json({
             success: false,
             message: "图片删除失败",

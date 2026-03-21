@@ -154,7 +154,7 @@ Visit: http://localhost:5173
 
 ## 📋 Deployment
 
-### Production Build
+### Traditional Deployment
 
 #### 1. Build frontend
 
@@ -184,6 +184,81 @@ pm2 startup
 #### 3. Deploy frontend
 
 Upload the contents of `dist/` folder to your web server.
+
+### Docker Deployment
+
+#### Prerequisites
+- Docker and Docker Compose installed
+
+#### 1. Configure environment variables
+
+**Create backend environment file:**
+
+```bash
+cd ServerBackend
+cp .env.example .env
+```
+
+Edit `ServerBackend/.env` file with your configuration:
+
+```bash
+PORT=3003
+MC_SERVER_IP=localhost
+MC_SERVER_PORT=25565
+ADMIN_SESSION_SECRET=your_secret_key
+```
+
+**Create root environment file:**
+
+```bash
+cp .env.example .env
+```
+
+Edit `.env` file with your configuration:
+
+```bash
+# Frontend configuration
+VITE_SITE_NAME=My Server
+VITE_API_BASE_URL=http://localhost:8080/api
+
+# Docker configuration
+DOCKER_VITE_API_BASE_URL=http://localhost:8080/api
+DOCKER_CORS_ORIGIN=http://localhost:8080
+FRONTEND_PORT=8080
+```
+
+#### 2. Start with Docker Compose
+
+```bash
+docker-compose up -d --build
+```
+
+This will:
+- Build and start the backend service on port 3001 (exposed internally)
+- Build and start the frontend service on the specified port (default: 8080)
+- Set up volume mounts for persistent data
+
+#### 3. Access the website
+
+Visit: http://localhost:8080
+
+#### 4. Environment variables for Docker
+
+| Variable | Description | Default Value |
+|----------|-------------|---------------|
+| `VITE_SITE_NAME` | Website name | My Server |
+| `VITE_API_BASE_URL` | API base URL | http://localhost:8080/api |
+| `DOCKER_VITE_API_BASE_URL` | API URL inside Docker | http://localhost:8080/api |
+| `DOCKER_CORS_ORIGIN` | CORS origin for backend | http://localhost:8080 |
+| `FRONTEND_PORT` | Frontend port | 8080 |
+
+#### 5. Docker commands
+
+- **Start services:** `docker-compose up -d`
+- **Stop services:** `docker-compose down`
+- **Restart services:** `docker-compose restart`
+- **View logs:** `docker-compose logs -f`
+- **Rebuild services:** `docker-compose up -d --build`
 
 ---
 

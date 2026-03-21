@@ -15,29 +15,29 @@ const handleRefresh = () => {
 <template>
   <section class="error-view">
     <div class="error-card">
-      <!-- 错误图标 -->
+
       <div class="error-icon">
         <svg width="80" height="80" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <circle cx="12" cy="12" r="10" stroke="#ef4444" stroke-width="2"/>
           <path d="M12 8V12L14 14" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </div>
-      
-      <!-- 错误标题 -->
+
+
       <h1 class="error-title">网络连接错误</h1>
-      
-      <!-- 错误描述 -->
+
+
       <p class="error-description">
         无法连接到服务器，请检查网络连接或联系管理员。
       </p>
-      
-      <!-- 错误详情 -->
+
+
       <div class="error-details">
         <p>错误类型: CORS 跨域限制</p>
         <p>可能原因: 服务器配置的跨域规则与当前域名不匹配</p>
       </div>
-      
-      <!-- 操作按钮 -->
+
+
       <div class="error-actions">
         <button class="btn btn-secondary" @click="handleBack">
           返回

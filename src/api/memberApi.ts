@@ -44,7 +44,7 @@ export async function getMemberList(): Promise<MemberListResponse> {
     } catch (error) {
         if (axios.isAxiosError(error)) {
             const errorData = error.response?.data as MemberListResponse;
-            console.error('获取成员列表失败：', errorData.message || error.message);
+
             return {
                 success: false,
                 count: 0,
@@ -52,7 +52,7 @@ export async function getMemberList(): Promise<MemberListResponse> {
                 message: errorData?.message || '接口请求失败'
             };
         } else {
-            console.error('获取成员列表异常：', error);
+
             return {
                 success: false,
                 count: 0,
@@ -85,7 +85,7 @@ export async function saveMemberList(members: ServerMember[]): Promise<MemberLis
     } catch (error) {
         if (axios.isAxiosError(error)) {
             const errorData = error.response?.data as MemberListResponse;
-            console.error('保存成员列表失败：', errorData.message || error.message);
+
             return {
                 success: false,
                 count: 0,
@@ -93,7 +93,7 @@ export async function saveMemberList(members: ServerMember[]): Promise<MemberLis
                 message: errorData?.message || '接口请求失败'
             };
         } else {
-            console.error('保存成员列表异常：', error);
+
             return {
                 success: false,
                 count: 0,
@@ -126,7 +126,7 @@ export async function addMember(member: ServerMember): Promise<MemberListRespons
     } catch (error) {
         if (axios.isAxiosError(error)) {
             const errorData = error.response?.data as MemberListResponse;
-            console.error('添加成员失败：', errorData.message || error.message);
+
             return {
                 success: false,
                 count: 0,
@@ -134,7 +134,7 @@ export async function addMember(member: ServerMember): Promise<MemberListRespons
                 message: errorData?.message || '接口请求失败'
             };
         } else {
-            console.error('添加成员异常：', error);
+
             return {
                 success: false,
                 count: 0,
@@ -165,7 +165,7 @@ export async function deleteMember(uuid: string): Promise<MemberListResponse> {
     } catch (error) {
         if (axios.isAxiosError(error)) {
             const errorData = error.response?.data as MemberListResponse;
-            console.error('删除成员失败：', errorData.message || error.message);
+
             return {
                 success: false,
                 count: 0,
@@ -173,7 +173,7 @@ export async function deleteMember(uuid: string): Promise<MemberListResponse> {
                 message: errorData?.message || '接口请求失败'
             };
         } else {
-            console.error('删除成员异常：', error);
+
             return {
                 success: false,
                 count: 0,

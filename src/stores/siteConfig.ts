@@ -9,6 +9,7 @@ export interface SiteConfig {
     siteAuthor: string
     siteVersion: string
     siteKeywords: string
+    musicPlaylistId: string
     serverAddress: string
     serverCreationDate: string
     startYear: string
