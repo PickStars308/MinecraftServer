@@ -53,7 +53,7 @@ const userProfile = ref<UserProfile>({
   avatarUrl: '',
   backgroundUrl: '',
 })
-const showLyrics = ref(true)
+const showLyrics = ref(false)
 
 const ENABLE_QR_LOGIN = String(import.meta.env.VITE_ENABLE_QR_LOGIN || 'false').toLowerCase() === 'true'
 const AUTO_PLAY = String(import.meta.env.VITE_AUTO_PLAY || 'false').toLowerCase() === 'true'
@@ -1030,10 +1030,16 @@ onBeforeUnmount(() => {
 .player-overlay {
   position: fixed;
   inset: 0;
-  background: var(--color-bg-popup);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  background: rgba(0, 0, 0, 0.6);
   z-index: 1001;
+}
+
+@supports (backdrop-filter: blur(30px)) or (-webkit-backdrop-filter: blur(30px)) {
+  .player-overlay {
+    background: var(--color-bg-popup);
+    backdrop-filter: blur(30px);
+    -webkit-backdrop-filter: blur(30px);
+  }
 }
 
 .player-panel {
@@ -1043,7 +1049,7 @@ onBeforeUnmount(() => {
   transform: translate(-50%, -50%);
   width: 90%;
   height: 90vh;
-  background: rgb(0 0 0 / 16%);
+  background: rgba(0, 0, 0, 0.25);
   backdrop-filter: blur(24px) saturate(200%);
   -webkit-backdrop-filter: blur(24px) saturate(200%);
   border: 1px solid rgba(255, 255, 255, 0.28);
@@ -1064,11 +1070,15 @@ onBeforeUnmount(() => {
 }
 
 .player-title {
-  color: var(--color-text-black);
+  color: white;
   font-size: 1.3rem;
   font-weight: 700;
   margin: 0;
   letter-spacing: 0.5px;
+
+  @media (max-width: 768px) {
+    font-size: 1rem;
+  }
 }
 
 .header-actions {
@@ -1099,7 +1109,12 @@ onBeforeUnmount(() => {
   }
 
   svg {
-    fill: var(--color-text-black);
+    fill: #FFFFFF;
+  }
+
+  @media (max-width: 768px) {
+    width: 32px;
+    height: 32px;
   }
 }
 

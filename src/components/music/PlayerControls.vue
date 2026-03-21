@@ -196,6 +196,12 @@ function getPlayModeTitle() {
   &.playing {
     animation: rotateDisc 8s linear infinite;
   }
+
+  @media (max-width: 768px) {
+    width: 70px;
+    height: 70px;
+  }
+
 }
 
 @keyframes rotateDisc {
@@ -219,6 +225,10 @@ function getPlayModeTitle() {
   font-weight: 700;
   color: #fff;
   letter-spacing: 0.5px;
+
+  @media (max-width: 768px) {
+    font-size: 1rem;
+  }
 }
 
 .track-artist {
@@ -303,6 +313,11 @@ function getPlayModeTitle() {
   align-items: center;
   justify-content: center;
   gap: 24px;
+
+  @media (max-width: 768px) {
+    gap: 0px;
+    justify-content: space-between
+  }
 }
 
 .control-btn-large {
