@@ -7,13 +7,11 @@ export interface SiteConfig {
     siteName: string
     siteDescription: string
     siteAuthor: string
-    siteVersion: string
     siteKeywords: string
     musicPlaylistId: string
     serverAddress: string
     serverCreationDate: string
     startYear: string
-    copyright: string
 }
 
 export default defineStore('siteConfig', () => {

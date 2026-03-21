@@ -84,7 +84,7 @@ onUnmounted(() => {
 });
 
 
-const Copyright = computed(() => siteConfigStore.config?.copyright || '');
+const Copyright = computed(() => 'PickStars');
 const StartYear = computed(() => siteConfigStore.config?.startYear || '');
 
 const Year = new Date().getFullYear();

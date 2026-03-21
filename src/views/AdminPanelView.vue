@@ -45,7 +45,7 @@ const mobileMenuOpen = ref(false)
 onMounted(async () => {
   await checkForUpdates()
   const latestVersion = getLatestVersion()
-  hasUpdate.value = latestVersion && latestVersion !== '1.0.0'
+  hasUpdate.value = Boolean(latestVersion && latestVersion !== '1.0.0')
 })
 </script>
 
